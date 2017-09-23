@@ -1,0 +1,21 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Head{
+    @RenderSection("Head", required: false)
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-4 bg-light">@await Html.PartialAsync("~/Views/Document/DocTree.cshtml")</div>
+        <div class="col-8">
+            @RenderBody()
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    @RenderSection("Scripts", required: false)
+}

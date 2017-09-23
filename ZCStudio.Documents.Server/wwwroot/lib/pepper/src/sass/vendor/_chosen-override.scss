@@ -1,0 +1,145 @@
+.chosen-container-single .chosen-single abbr {
+    background: url('../img/vendor/chosen-sprite.png') -42px 1px no-repeat;
+}
+.chosen-container-single .chosen-single div b {
+    background: url('../img/vendor/chosen-sprite.png') no-repeat 0px 2px;
+}
+.chosen-container-single .chosen-search input[type="text"] {
+    background: url('../img/vendor/chosen-sprite.png') no-repeat 100% -20px;
+}
+.chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
+    background: url('../img/vendor/chosen-sprite.png') -42px 1px no-repeat;
+}
+.chosen-rtl .chosen-search input[type="text"] {
+    background: url('../img/vendor/chosen-sprite.png') no-repeat -30px -20px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-resolution: 144dpi) {
+    .chosen-rtl .chosen-search input[type="text"],
+    .chosen-container-single .chosen-single abbr,
+    .chosen-container-single .chosen-single div b,
+    .chosen-container-single .chosen-search input[type="text"],
+    .chosen-container-multi .chosen-choices .search-choice .search-choice-close,
+    .chosen-container .chosen-results-scroll-down span,
+    .chosen-container .chosen-results-scroll-up span {
+        background-image: url('../img/vendor/chosen-sprite@2x.png') !important;
+    }
+}
+
+.chosen-container {
+    font-size: $default-font-size;
+}
+
+.chosen-search input[type="text"]:focus {
+    @include box-shadow(none);
+}
+.chosen-container-single .chosen-search input[type="text"] {
+    border-color: $default-border-color;
+    background-position:  100% -20px;
+}
+
+.chosen-container-active.chosen-with-drop .chosen-single {
+    background: #fff;
+    border-color: $primary-color;
+    @include drop-shadow(0, 0, 4px, 0.6, $primary-color);
+
+    div {
+        width: 25px;
+        background: #F6F6F6;
+        border-left: 1px solid $default-border-color;
+
+        b {
+            margin: 10px 0 0 5px;
+            width: 10px;
+            height: 10px;
+            background-position: -18px -4px;
+        }
+    }
+}
+
+.chosen-container .chosen-results li.highlighted {
+    background: $primary-color;
+}
+
+.chosen-container-single {
+    .chosen-drop {
+        border-color: $primary-color;
+        border-top: 1px solid $default-border-color;
+    }
+
+    .chosen-single {
+        border-color: $default-border-color;
+        height: 32px;
+        line-height: 30px;
+        background: #fff;
+        @include box-shadow(none);
+
+        abbr {
+            right: 30px;
+            top: 10px;
+        }
+
+        div {
+            width: 25px;
+            background: #F6F6F6;
+            border-left: 1px solid $default-border-color;
+
+            b {
+                margin: 10px 0 0 5px;
+                width: 10px;
+                height: 10px;
+                background: url('../img/vendor/chosen-sprite.png') no-repeat 0px -4px;
+            }
+        }
+    }
+}
+
+.chosen-container-multi .chosen-choices {
+    height: 32px;
+    line-height: 30px;
+    border-color: $default-border-color;
+    background: #fff;
+    padding: 0 5px;
+    @include box-shadow(none);
+    @include border-radius;
+}
+
+.chosen-container .chosen-drop {
+    border-color: $primary-color;
+    border-top-color: $default-border-color;
+    @include border-bottom-radius();
+}
+.chosen-container.chosen-container-multi .chosen-drop {
+    padding: 3px 5px;
+}
+
+.chosen-container-multi .chosen-choices li.search-choice {
+    padding: 5px 20px 0 5px;
+    margin: 3px 2px;
+    height: 24px;
+    background: $default-color;
+    border-color: $default-border-color;
+
+    .search-choice-close {
+        top: 6px;
+    }
+}
+.chosen-container-active.chosen-with-drop .chosen-choices {
+    background: #fff;
+    border-color: $primary-color;
+    border-bottom-color: $default-border-color;
+    @include drop-shadow(0, 0, 4px, 0.6, $primary-color);
+    @include border-bottom-radius(0);
+
+    div {
+        width: 25px;
+        background: #F6F6F6;
+        border-left: 1px solid $default-border-color;
+
+        b {
+            margin: 10px 0 0 5px;
+            width: 10px;
+            height: 10px;
+            background-position: -18px -4px;
+        }
+    }
+}

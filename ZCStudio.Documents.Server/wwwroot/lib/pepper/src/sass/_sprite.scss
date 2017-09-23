@@ -1,0 +1,11 @@
+$icon-layout:smart;
+@import "icon/*.png";
+@include all-icon-sprites(true);
+
+a[class^="icon-"],
+a[class*=" icon-"],
+span[class^="icon-"],
+span[class*=" icon-"] {
+    display: inline-block;
+    vertical-align: middle;
+}

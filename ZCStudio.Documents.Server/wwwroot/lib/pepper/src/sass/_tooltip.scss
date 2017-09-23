@@ -1,0 +1,49 @@
+.tooltip-overlay {
+    position: absolute;
+    z-index: 100;
+    @include border-radius;
+    @include drop-shadow(0, 0, 5px, 0.15);
+    background: $default-tooltip-background;
+    color: $default-tooltip-font-color;
+    padding: 2px 10px;
+    max-width: 220px;
+
+    &:before {
+        position: absolute;
+        display: block;
+        border: solid;
+        content: " ";
+    }
+}
+
+.tooltip-top:before {
+    border-color: $default-tooltip-background transparent;
+    border-width: 6px 6px 0 6px;
+    margin-left: -6px;
+    top: 100%;
+    left: 50%;
+}
+
+.tooltip-bottom:before {
+    border-color: $default-tooltip-background transparent;
+    border-width: 0 6px 6px 6px;
+    margin-left: -6px;
+    bottom: 100%;
+    left: 50%;
+}
+
+.tooltip-right:before {
+    border-color: transparent $default-tooltip-background;
+    border-width: 6px 6px 6px 0;
+    margin-top: -6px;
+    top: 50%;
+    right: 100%;
+}
+
+.tooltip-left:before {
+    border-color: transparent $default-tooltip-background;
+    border-width: 6px 0 6px 6px;
+    margin-top: -6px;
+    top: 50%;
+    left: 100%;
+}

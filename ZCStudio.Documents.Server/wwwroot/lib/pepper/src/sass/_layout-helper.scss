@@ -1,0 +1,146 @@
+.pull-right { float: right; }
+.pull-left  { float: left; }
+.clearfix   { @include clear-fix(); }
+
+.hide   { display: none; }
+
+.align-left    { text-align: left; }
+.align-center  { text-align: center; }
+.align-right   { text-align: right; }
+.align-justify { text-align: justify; }
+
+.align-top,
+.align-middle,
+.align-bottom {
+    display: table;
+}
+.align-top > span {
+    display: table-cell;
+    vertical-align: top;
+}
+.align-middle > span {
+    display: table-cell;
+    vertical-align: middle;
+}
+.align-bottom > span {
+    display: table-cell;
+    vertical-align: bottom;
+}
+
+.margin-none       { margin-top: 0; margin-bottom: 0; }
+.margin-top        { margin-top: $default-margin-top; }
+.margin-bottom     { margin-bottom: $default-margin-bottom; }
+.margin-top-bottom { margin-top: $default-margin-top; margin-bottom: $default-margin-bottom; }
+
+@each $types in $margin-types {
+    .margin-top-#{nth($types, 1)}        { margin-top: nth($types, 2); }
+    .margin-bottom-#{nth($types, 1)}     { margin-bottom: nth($types, 3); }
+    .margin-top-bottom-#{nth($types, 1)} { margin-top: nth($types, 2); margin-bottom: nth($types, 3); }
+}
+
+@media (max-width: $default-content-width-md) {
+    .pull-md-right { float: right; }
+    .pull-md-left  { float: left; }
+    .pull-md-none  { float: none; }
+
+    .align-md-left    { text-align: left; }
+    .align-md-center  { text-align: center; }
+    .align-md-right   { text-align: right; }
+    .align-md-justify { text-align: justify; }
+
+    .align-md-top,
+    .align-md-middle,
+    .align-md-bottom {
+        display: table;
+    }
+    .align-md-top > span {
+        display: table-cell;
+        vertical-align: top;
+    }
+    .align-md-middle > span {
+        display: table-cell;
+        vertical-align: middle;
+    }
+    .align-md-bottom > span {
+        display: table-cell;
+        vertical-align: bottom;
+    }
+
+    .margin-md-none       { margin-top: 0; margin-bottom: 0; }
+    .margin-md-top        { margin-top: $default-margin-top; }
+    .margin-md-bottom     { margin-bottom: $default-margin-bottom; }
+    .margin-md-top-bottom { margin-top: $default-margin-top; margin-bottom: $default-margin-bottom; }
+
+    @each $types in $margin-types {
+        .margin-md-top-#{nth($types, 1)}        { margin-top: nth($types, 2); }
+        .margin-md-bottom-#{nth($types, 1)}     { margin-bottom: nth($types, 3); }
+        .margin-md-top-bottom-#{nth($types, 1)} { margin-top: nth($types, 2); margin-bottom: nth($types, 3); }
+    }
+}
+
+@media (max-width: $default-content-width-sm) {
+    .pull-sm-right { float: right; }
+    .pull-sm-left  { float: left; }
+    .pull-sm-none  { float: none; }
+
+    .align-sm-left    { text-align: left; }
+    .align-sm-center  { text-align: center; }
+    .align-sm-right   { text-align: right; }
+    .align-sm-justify { text-align: justify; }
+
+    .align-sm-top,
+    .align-sm-middle,
+    .align-sm-bottom {
+        display: table;
+    }
+    .align-sm-top > span {
+        display: table-cell;
+        vertical-align: top;
+    }
+    .align-sm-middle > span {
+        display: table-cell;
+        vertical-align: middle;
+    }
+    .align-sm-bottom > span {
+        display: table-cell;
+        vertical-align: bottom;
+    }
+
+    .margin-sm-none       { margin-top: 0; margin-bottom: 0; }
+    .margin-sm-top        { margin-top: $default-margin-top; }
+    .margin-sm-bottom     { margin-bottom: $default-margin-bottom; }
+    .margin-sm-top-bottom { margin-top: $default-margin-top; margin-bottom: $default-margin-bottom; }
+
+    @each $types in $margin-types {
+        .margin-sm-top-#{nth($types, 1)}        { margin-top: nth($types, 2); }
+        .margin-sm-bottom-#{nth($types, 1)}     { margin-bottom: nth($types, 3); }
+        .margin-sm-top-bottom-#{nth($types, 1)} { margin-top: nth($types, 2); margin-bottom: nth($types, 3); }
+    }
+}
+
+@media (min-width: $default-content-width-md) {
+    html body .show-sm {
+        display: none;
+    }
+    html body .show-md {
+        display: none;
+    }
+}
+
+@media (min-width: $default-content-width-sm) {
+    html body .show-sm {
+        display: none;
+    }
+}
+
+@media (max-width: $default-content-width-md) {
+    html body .hide-md {
+        display: none;
+    }
+}
+
+@media (max-width: $default-content-width-sm) {
+    html body .hide-sm {
+        display: none;
+    }
+}

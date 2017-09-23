@@ -1,0 +1,56 @@
+.pagination {
+    @include clear-fix;
+    margin: 0 0 $default-margin-bottom;
+    padding: 0;
+    list-style: none;
+    display: inline-block;
+
+    li {
+        display: inline;
+
+        a {
+            float: left;
+            display: block;
+            position: relative;
+            background: $default-color;
+            color: $default-font-color;
+            padding: 5px 12px;
+            border: 0 solid $default-border-color;
+            border-right-width: 1px;
+            border-bottom-width: 2px;
+            @include transition(background 0.2s);
+
+            &:hover {
+                background: darken($default-color, 7%);
+                text-decoration: none;
+            }
+        }
+
+        &.disabled a {
+            @include opacity(0.6);
+            @include disable-mouse;
+        }
+
+        &.active a {
+            color: #fff;
+            z-index: 10;
+            background: $primary-color;
+            border-color: darken($primary-color, 10%);
+        }
+
+        &:first-child a {
+            @include border-radius($default-border-radius 0 0 $default-border-radius);
+        }
+
+        &:last-child a {
+            border-right-width: 0;
+            @include border-radius(0 $default-border-radius $default-border-radius 0);
+        }
+    }
+}
+
+@each $size in $pepper-sizes {
+    .pagination-#{$size} li a {
+        @extend .btn-#{$size};
+    }
+}

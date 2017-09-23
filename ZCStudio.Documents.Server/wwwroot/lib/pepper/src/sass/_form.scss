@@ -1,0 +1,541 @@
+$inputElements: 'input[type="text"],
+                 input[type="password"],
+                 input[type="color"],
+                 input[type="date"],
+                 input[type="datetime"],
+                 input[type="datetime-local"],
+                 input[type="email"],
+                 input[type="month"],
+                 input[type="number"],
+                 input[type="range"],
+                 input[type="search"],
+                 input[type="tel"],
+                 input[type="time"],
+                 input[type="url"],
+                 input[type="week"],
+                 select,
+                 textarea';
+
+$submitElements: '.btn,
+                  button,
+                  input[type="submit"],
+                  input[type="reset"],
+                  input[type="button"]';
+
+@mixin inputStyle($color) {
+    border-color: $color;
+    color: darken($color, 5%);
+
+    &:focus {
+        border-color: $color;
+        @include drop-shadow(0, 0, 4px, 0.6, $color);
+    }
+}
+
+#{$inputElements} {
+    display:inline-block;
+    vertical-align: top;
+    @include border-radius;
+    font-family: $default-font-family;
+    padding: 5px 5px;
+    color: $default-font-color;
+    border: 1px solid $default-border-color;
+    width: 100%;
+    @include transition(border-color 0.2s, box-shadow 0.2s);
+
+    &:focus {
+        border-color: $primary-color;
+        @include drop-shadow(0, 0, 4px, 0.6, $primary-color);
+        outline: none;
+    }
+
+    &:invalid {
+        border-color: $danger-color;
+        background: lighten($danger-color, 35%);
+        @include drop-shadow-none();
+
+        &:focus {
+            @include drop-shadow(0, 0, 4px, 0.6, $danger-color);
+        }
+    }
+
+    &.disabled {
+        background: #eee;
+        @include disable-mouse;
+    }
+
+    &:disabled {
+        background: #eee;
+        cursor: not-allowed;
+    }
+}
+
+.form-box {
+    margin-bottom: 10px;
+
+    label {
+        display: block;
+        width: 100%;
+    }
+
+    &.input-inline {
+        * {
+            display: inline;
+            width: auto;
+        }
+    }
+
+    &.input-sm {
+        & > *,
+        .btn-join > * {
+            padding: 2px 5px;
+            font-size: 0.9em;
+        }
+
+        label {
+            padding: 0;
+            font-size: 1em;
+        }
+
+        .btn-join {
+            font-size: 1em;
+            padding: 0;
+        }
+    }
+
+    &.input-lg {
+        & > *,
+        .btn-join > * {
+            padding: 15px 5px;
+            font-size: 1.2em;
+            vertical-align: middle;
+        }
+
+        label {
+            padding: 0;
+            font-size: 1em;
+        }
+
+        #{$submitElements},
+        .input-join {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        .btn-join {
+            font-size: 1em;
+            padding: 0;
+        }
+    }
+}
+
+.input-info {
+    color: rgba($default-font-color, 0.6);
+}
+
+@each $color in $pepper-colors {
+    .input-#{nth($color, 1)} {
+        input, select, textarea {
+            @include inputStyle(nth($color, 2));
+        }
+
+        .input-info {
+            color: nth($color, 2);
+        }
+    }
+}
+
+.input-error {
+    input, select, textarea {
+        @include inputStyle($danger-color);
+    }
+
+    .input-info {
+        color: $danger-color;
+    }
+}
+
+.input-join {
+    @include border-radius;
+    background: $default-color;
+    border: 1px solid $default-border-color;
+    display: inline-block;
+    padding: 5px 10px;
+}
+
+.input-append,
+.input-prepend {
+    display: table;
+    width: 100%;
+
+    #{$inputElements} {
+        width: 100%;
+        position: relative;
+    }
+
+    & > * {
+        vertical-align: middle;
+        width: 1%;
+        display: table-cell;
+    }
+
+    input[type="submit"],
+    input[type="reset"],
+    input[type="button"] {
+        width: auto;
+    }
+}
+
+.input-append {
+    & > *:last-child {
+        &, * {
+            @include border-left-radius(0);
+        }
+    }
+
+    #{$inputElements} {
+        @include border-right-radius(0);
+        border-right: 0;
+    }
+}
+
+.input-prepend {
+    & > *:first-child {
+        &, * {
+            @include border-right-radius(0);
+        }
+    }
+
+    #{$inputElements} {
+        @include border-left-radius(0);
+        border-left: 0;
+    }
+}
+
+.form-horizontal {
+    @include clear-fix;
+
+    [class*=" col-"],
+    [class^="col-"] {
+        line-height: 32px;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+}
+
+@include input-placeholder(lighten($default-font-color, 50%));
+
+input, select, textarea {
+    @each $color in $pepper-colors {
+        &.input-#{nth($color, 1)} {
+            @include inputStyle(nth($color, 2));
+        }
+    }
+
+    .input-error {
+        @include inputStyle($danger-color);
+    }
+}
+
+fieldset legend {
+    padding: 5px 10px;
+}
+
+textarea {
+    resize:none;
+}
+
+input[type=radio],
+input[type=checkbox] {
+    margin: 4px;
+}
+
+.form-add {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+input[type=checkbox] {
+    &.input-switch {
+        display: none;
+
+        & + .form-add {
+            margin: 0 5px;
+            width: 55px;
+            height: 24px;
+            background-color: $default-border-color;
+            @include border-radius(12px);
+            @include transition(all .3s ease);
+
+            &:after {
+                font-family: Arial, Helvetica, sans-serif;
+                content: "|||";
+                background-color: #FFF;
+                @include border-radius(50%);
+                @include transition(left .3s ease);
+                text-align: center;
+                font-size: 8px;
+                position: absolute;
+                color: darken($default-border-color, 20%);
+                top: 2px;
+                left: 2px;
+                width: 20px;
+                height: 20px;
+                line-height: 18px;
+            }
+        }
+
+        &:checked + .form-add {
+            background-color: $primary-color;
+
+            &:after {
+                left: 33px;
+            }
+        }
+    }
+
+    &.input-check {
+        display: none;
+
+        & + .form-add {
+            margin: 0 5px 5px;
+            width: 16px;
+            height: 16px;
+            border: 1px solid $default-border-color;
+            background: #fff;
+
+            &:after {
+                content: " ";
+                background-color: #fff;
+                @include transition(all .2s ease);
+                position: absolute;
+                top: 2px;
+                left: 2px;
+                width: 10px;
+                height: 10px;
+            }
+
+            &:hover {
+                border-color: $primary-color;
+            }
+        }
+
+        &:checked + .form-add {
+            &:after {
+                background-color: $primary-color;
+            }
+        }
+    }
+}
+
+input[type=radio] {
+    &.input-radio {
+        display: none;
+
+        & + .form-add {
+            margin: 0 5px 5px;
+            width: 16px;
+            height: 16px;
+            border: 1px solid $default-border-color;
+            background: #fff;
+            @include border-radius(50%);
+
+            &:after {
+                content: " ";
+                background-color: #fff;
+                @include border-radius(50%);
+                @include transition(all .2s ease);
+                position: absolute;
+                top: 2px;
+                left: 2px;
+                width: 10px;
+                height: 10px;
+            }
+
+            &:hover {
+                border-color: $primary-color;
+            }
+        }
+
+        &:checked + .form-add {
+            &:after {
+                background-color: $primary-color;
+            }
+        }
+    }
+}
+
+label.checkbox,
+label.radio {
+    cursor: pointer;
+}
+
+label.radio:hover .input-radio  + .pepper-form-add {
+    border-color: $primary-color;
+}
+label.checkbox:hover .input-check  + .pepper-form-add {
+    border-color: $primary-color;
+}
+
+.input-select {
+    display: none;
+}
+
+.input-select-holder {
+    position: relative;
+    @include border-radius;
+    @include clear-fix;
+
+    &.open {
+        @include drop-shadow(0, 0, 4px, 0.6, $primary-color);
+
+        .input-select-add {
+            @include border-bottom-radius(0);
+            border-color: $primary-color;
+            border-bottom-color: $default-border-color;
+
+            & + .input-select-options {
+                display: block;
+            }
+        }
+    }
+}
+
+.input-select-add {
+    display:inline-block;
+    @include border-radius;
+    padding: 5px 5px;
+    width: 100%;
+    border: 1px solid $default-border-color;
+    @include transition(border-color 0.2s, box-shadow 0.2s);
+    cursor: pointer;
+    position: relative;
+
+    &.default {
+        color: lighten($default-font-color, 50%);
+    }
+
+    &:before {
+        position: absolute;
+        right: 0px;
+        top: 0;
+        bottom: 0;
+        width: 25px;
+        content: " ";
+        background: #f6f6f6;
+        @include border-radius(0 $default-border-radius $default-border-radius 0);
+        border-left: 1px solid $default-border-color;
+    }
+
+    &:after {
+        position: absolute;
+        right: 7px;
+        top: 50%;
+        margin-top: -2px;
+        content: " ";
+        @include caret('bottom', 5px, $default-border-color);
+    }
+}
+
+.input-select-options {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: -1px;
+    width: 100%;
+    z-index: 10;
+    background: #fafafa;
+    border: 1px solid $primary-color;
+    border-top: 0;
+    @include border-bottom-radius();
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.input-select-optgroup-holder {
+    .input-select-option {
+        padding-left: 15px;
+    }
+}
+
+.input-select-optgroup {
+    font-weight: bold;
+    background: #f3f3f3;
+    border-top: 1px solid #e5e5e5;
+    padding: 3px 5px;
+}
+
+.input-select-option {
+    border-top: 1px solid #e5e5e5;
+    padding: 3px 5px;
+    cursor: pointer;
+
+    &:hover {
+        background: $primary-color;
+        color: #fff;
+    }
+    &.disabled {
+        color: lighten($default-font-color, 50%);
+        cursor: default;
+
+        &:hover {
+            color: lighten($default-font-color, 50%);
+            background: transparent;
+        }
+    }
+    &:last-child {
+        @include border-bottom-radius();
+    }
+}
+
+.form-box {
+    &.input-sm,
+    &.input-lg {
+        .input-select-holder {
+            padding: 0;
+        }
+
+        .input-select-options {
+            font-size: $default-font-size;
+        }
+    }
+
+    &.input-sm {
+        .input-select-add {
+            padding: 2px 5px;
+        }
+    }
+
+    &.input-lg {
+        .input-select-add {
+            padding: 15px 5px;
+        }
+    }
+}
+
+@media (max-width: $default-content-width-sm) {
+    .form-box.form-horizontal {
+        [class*=" col-md"],
+        [class^="col-md"] {
+            line-height: inherit;
+        }
+    }
+}
+
+@media (max-width: $default-content-width-md) {
+    .form-box.form-horizontal {
+        [class*=" col-lg"],
+        [class^="col-lg"] {
+            line-height: inherit;
+        }
+    }
+    .input-select {
+        display: block;
+    }
+    .input-select-holder {
+        display: none;
+    }
+}

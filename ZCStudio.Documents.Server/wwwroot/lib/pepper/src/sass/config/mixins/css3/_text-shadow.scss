@@ -1,0 +1,9 @@
+$default-text-shadow-color      : #aaaaaa !default;
+$default-text-shadow-h-offset   : 0px     !default;
+$default-text-shadow-v-offset   : 0px     !default;
+$default-text-shadow-blur       : 1px     !default;
+$default-text-shadow-spread     : false   !default;
+
+@mixin text-shadow($shadows...) {
+    text-shadow: $shadows;
+}

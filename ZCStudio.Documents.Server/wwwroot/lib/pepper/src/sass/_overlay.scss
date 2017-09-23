@@ -1,0 +1,54 @@
+.mfp-wrap {
+    overflow-y: scroll !important;
+}
+
+.pepper-overlay {
+    position: relative;
+    padding: 20px;
+    width: auto;
+    max-width: 500px;
+    margin: 20px auto;
+    @include border-radius;
+    background: $default-content-background;
+    border: 2px solid $default-border-color;
+}
+
+.pepper-overlay-xs {
+    max-width: 150px;
+}
+.pepper-overlay-sm {
+    max-width: 300px;
+}
+.pepper-overlay-lg {
+    max-width: 700px;
+}
+.pepper-overlay-xl {
+    max-width: 900px;
+}
+
+.pepper-overlay-zoom-in {
+    .pepper-overlay {
+        opacity: 0;
+        transform: scale(0.8);
+        @include transition(all 0.2s ease-in-out 0s);
+    }
+
+    &.mfp-ready .pepper-overlay {
+        opacity: 1;
+        transform: scale(1);
+    }
+    &.mfp-removing .pepper-overlay {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    &.mfp-bg {
+        opacity: 0.001;
+        @include transition(opacity 0.3s ease-out 0s);
+    }
+    &.mfp-ready.mfp-bg {
+        opacity: 0.8;
+    }
+    &.mfp-removing.mfp-bg {
+        opacity: 0;
+    }
+}

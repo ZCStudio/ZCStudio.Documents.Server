@@ -1,0 +1,62 @@
+@model ZCStudio.Documents.Server.Models.DocumentContent
+
+@{
+
+}
+
+<environment names="Development">
+    <link href="http://code.gijgo.com/1.5.0/css/gijgo.css" rel="stylesheet" type="text/css" />
+    <link href="~/lib/popper.js/docs/css/font-awesome.min.css" rel="stylesheet" />
+</environment>
+<environment names="Staging,Production">
+    <link href="~/lib/gijgo/dist/combined/css/gijgo.css" rel="stylesheet" />
+    <link href="~/lib/popper.js/docs/css/font-awesome.min.css" rel="stylesheet" />
+</environment>
+
+<div id="tree" class="container-fluid">
+</div>
+
+<environment names="Development">
+    <script src="~/lib/gijgo/dist/combined/js/gijgo.js"></script>
+    <script src="~/js/gijgoext.js"></script>
+</environment>
+<environment names="Staging,Production">
+    <script src="~/lib/gijgo/dist/combined/js/gijgo.js"></script>
+    <script src="~/js/gijgoext.js"></script>
+</environment>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var tree = $('#tree').tree({
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            dataSource: 'api/@Model.Name',
+            primaryKey: 'Id',
+            textField: 'Name',
+            childrenField: 'Children',
+            imageCssClassField: 'ImageCssClass',
+            imageUrlField: 'ImageUrl',
+            imageHtmlField: 'ImageHtml',
+            dataBound: function (e) {
+                var nodeid = decodeURI('@Html.UrlEncoder.Encode(Model.FilePath)');
+                var node = tree.getNodeById(nodeid);
+                var data = tree.getDataById(nodeid);
+                var parentnode = tree.getNodeById(data.ParentId);
+                //if (parentnode) {
+                //    tree.expand(parentnode);
+                //} else {
+                //    tree.expand(node);
+                //}
+                gj.tree.methods.expandToTop(tree, node);
+                gj.tree.methods.select(tree,node);
+            },
+            select: function (e, node, id) {
+                var nodedata = tree.getDataById(id);
+                if (!nodedata.FilePath) {
+                    return;
+                }
+                EventBus.dispatch("loadmdfile", node, tree.getDataById(id));
+            }
+        });
+    });
+</script>

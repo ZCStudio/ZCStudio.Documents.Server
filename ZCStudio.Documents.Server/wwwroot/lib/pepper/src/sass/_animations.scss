@@ -1,0 +1,9 @@
+.pepper-animation-auto,
+.pepper-animation {
+    @include opacity(0);
+}
+
+.pepper-animation-auto.animated,
+.pepper-animation.animated {
+    @include opacity(1);
+}

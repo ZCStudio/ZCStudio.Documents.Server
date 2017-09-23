@@ -1,0 +1,21 @@
+{
+  "name": "asp.net",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "v4.0.0-beta",
+    "jquery": "3.2.1",
+    "jquery-validation": "1.17.0",
+    "jquery-validation-unobtrusive": "3.2.6",
+    "popper.js": "v1.11.1",
+    "pepper": "v1.3.1",
+    "gijgo": "v1.5.0",
+    "marked": "v0.3.6",
+    "highlight": "9.12.0",
+    "jquery-query-object": "2.2.3"
+  },
+  "resolutions": {
+    "jquery-validation": "1.17.0",
+    "jquery": ">= 1.7.2",
+    "bootstrap": "v4.0.0-beta"
+  }
+}

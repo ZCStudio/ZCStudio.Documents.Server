@@ -1,0 +1,103 @@
+.popover-overlay {
+    position: absolute;
+    z-index: 100;
+    @include border-radius;
+    @include drop-shadow(0, 0, 5px, 0.15);
+    background: $default-popover-background;
+    color: $default-popover-font-color;
+
+    max-width: 220px;
+    border: 1px solid $default-popover-border;
+
+    &:before {
+        position: absolute;
+        display: block;
+        border: solid;
+        content: " ";
+    }
+    &:after {
+        position: absolute;
+        display: block;
+        border: solid;
+        content: " ";
+    }
+}
+
+.popover-title {
+    @include border-top-radius;
+    border-bottom: 1px solid darken($default-popover-background, 10%);
+    background: darken($default-popover-background, 3%);
+    padding: 5px 10px;
+}
+
+.popover-content {
+    padding: 5px 10px;
+}
+
+.popover-top {
+    &:before {
+        border-color: $default-popover-border transparent;
+        border-width: 8px 8px 0 8px;
+        margin-left: -8px;
+        top: 100%;
+        left: 50%;
+    }
+    &:after {
+        border-color: $default-popover-background transparent;
+        border-width: 6px 6px 0 6px;
+        margin-left: -6px;
+        top: 100%;
+        left: 50%;
+    }
+}
+
+.popover-bottom {
+    &:before {
+        border-color: $default-popover-border transparent;
+        border-width: 0 8px 8px 8px;
+        margin-left: -8px;
+        bottom: 100%;
+        left: 50%;
+    }
+    &:after {
+        border-color: $default-popover-background transparent;
+        border-width: 0 6px 6px 6px;
+        margin-left: -6px;
+        bottom: 100%;
+        left: 50%;
+    }
+}
+
+.popover-right {
+    &:before {
+        border-color: transparent $default-popover-border;
+        border-width: 8px 8px 8px 0;
+        margin-top: -8px;
+        top: 50%;
+        right: 100%;
+    }
+    &:after {
+        border-color: transparent $default-popover-background;
+        border-width: 6px 6px 6px 0;
+        margin-top: -6px;
+        top: 50%;
+        right: 100%;
+    }
+}
+
+.popover-left {
+    &:before {
+        border-color: transparent $default-popover-border;
+        border-width: 8px 0 8px 8px;
+        margin-top: -8px;
+        top: 50%;
+        left: 100%;
+    }
+    &:after {
+        border-color: transparent $default-popover-background;
+        border-width: 6px 0 6px 6px;
+        margin-top: -6px;
+        top: 50%;
+        left: 100%;
+    }
+}

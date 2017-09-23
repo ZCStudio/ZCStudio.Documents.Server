@@ -1,0 +1,82 @@
+.subnav {
+    @include border-radius;
+    background: $default-color;
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    padding: 5px 5px;
+    @include drop-shadow-inner(0, 0, 3px, 0.15);
+
+    li {
+        margin-bottom: 5px;
+
+        a {
+            @include border-radius;
+            color: $default-font-color;
+            padding: 2px 5px;
+            display: block;
+            font-weight: $default-font-weight-semi-bold;
+
+            &:hover {
+                background: darken($default-color, 3%);
+                text-decoration: none;
+            }
+        }
+
+        &.to-top {
+            display: none;
+
+            .fa {
+                display: block;
+                margin-top: 3px;
+            }
+        }
+
+        &.active {
+            & > a {
+                color: $primary-color;
+
+                &:hover {
+                    color: $primary-color;
+                }
+            }
+        }
+    }
+
+    li.active {
+        ul {
+            display: block;
+        }
+    }
+
+    ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: none;
+
+        li {
+            margin-left: 10px;
+            margin-bottom: 0px;
+
+            a {
+                font-weight: normal;
+                color: $default-font-color;
+
+                &:hover {
+                    color: darken($default-font-color, 3%);
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $default-content-width-md) {
+    .subnav {
+        li.active {
+            ul {
+                display: none !important;
+            }
+        }
+    }
+}

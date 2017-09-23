@@ -1,0 +1,82 @@
+﻿@model ZCStudio.Documents.Server.Models.DocumentContent
+
+@{
+    Layout = "~/Views/Document/_Layout_Document.cshtml";
+    ViewData["Title"] = $"{ ViewData["Title"]}-DocPage";
+}
+
+@section Head{
+    <environment names="Development">
+        @*<link href="https://cdn.bootcss.com/highlight.js/9.12.0/styles/solarized-dark.min.css" rel="stylesheet">*@
+        <link href="~/lib/highlight/src/styles/solarized-dark.css" rel="stylesheet" />
+    </environment>
+    <environment names="Staging,Production">
+        <link href="~/lib/highlight/src/styles/solarized-dark.css" rel="stylesheet" />
+    </environment>
+}
+
+<div id="content" class="container-fluid"></div>
+
+@section Scripts{
+    <environment names="Development">
+        <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="~/lib/marked/marked.min.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="~/lib/marked/marked.min.js"></script>
+    </environment>
+    <script type="text/javascript">
+
+        function MDFile(file) {
+            var mdpath = encodeURI('api/GetFileText/' + file.FilePath);
+            $.ajax({
+                url: mdpath,
+                error: function (result) {
+                    alert(result);
+                },
+                success: function (result) {
+                    marked(result.result, function (err, content) {
+                        if (err)
+                            throw err;
+                        document.getElementById('content').innerHTML = content;
+                    });
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            marked.setOptions({
+                highlight: function (code) {
+                    return hljs.highlightAuto(code).value;
+                }
+            });
+
+            EventBus.addEventListener("loadmdfile", function (e, file) {
+                document.getElementById('content').innerHTML = "";
+
+                var newUrl = $.query.set("filepath", file.FilePath).toString();
+                window.history.pushState(window.history.state, "", newUrl);
+
+                var index1 = file.FilePath.lastIndexOf(".");
+                var index2 = file.FilePath.length;
+                var extname = file.FilePath.substring(index1, index2).toLowerCase();
+                switch (extname) {
+                    case ".md":
+                        MDFile(file);
+                        break;
+                    case ".pdf":
+                        var url = encodeURI('api/GetFile/' + file.FilePath);
+                        $('#content').append('<embed class="container-fluid" style="height:' + $(document).height() + 'px;" src="' + url + '" />');
+                        break;
+                    default:
+                        if (index1 != -1) {
+                            document.getElementById('content').innerHTML = "不支持此文件格式" + extname;
+                        }
+                        break;
+                }
+            });
+        });
+    </script>
+
+}

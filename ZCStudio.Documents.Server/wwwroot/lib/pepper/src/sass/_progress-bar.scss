@@ -1,0 +1,47 @@
+@include keyframes('progress-bar-animation') {
+    0% { background-position:40px 0 }
+    100% { background-position:0 0 }
+}
+
+.progress {
+    @include drop-shadow-inner(0, 2px, 3px, 0.1);
+    @include border-radius;
+
+    background-color: #F5F5F5;
+    height: 20px;
+    overflow: hidden;
+}
+
+.progress-striped {
+    .progress-bar {
+        @include striped-bg($primary-color, 0.2);
+
+        @each $color in $pepper-colors {
+            &.progress-bar-#{nth($color, 1)} {
+                @include striped-bg(nth($color, 2), 0.2);
+            }
+        }
+    }
+
+    &.animate .progress-bar {
+        @include animation(2s linear 0s normal none infinite progress-bar-animation);
+    }
+}
+
+.progress-bar {
+    @include drop-shadow-inner(0, -1px, 0, 0.3);
+    background: $primary-color;
+    color: #fff;
+    float: left;
+    height: 100%;
+    line-height: 20px;
+    text-align: center;
+    @include transition(width 0.5s);
+    width: 0;
+
+    @each $color in $pepper-colors {
+        &.progress-bar-#{nth($color, 1)} {
+            background: nth($color, 2);
+        }
+    }
+}

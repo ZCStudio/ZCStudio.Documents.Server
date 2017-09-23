@@ -1,0 +1,133 @@
+.container {
+    @include clear-fix;
+    width: 100%;
+    max-width: $default-content-width-md;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.row {
+    @include clear-fix;
+
+    margin-left: -$grid-col-padding / 2;
+    margin-right: -$grid-col-padding / 2;
+
+    & > .row {
+        margin-left: 0;
+        margin-right: 0;
+        float: left;
+        width: 100%;
+    }
+
+    [class^="col-"],
+    [class*=" col-"] {
+        padding-left: $grid-col-padding / 2;
+        padding-right: $grid-col-padding / 2;
+        min-height: 1px;
+        position: relative;
+        clear: both;
+
+        &.centered {
+            margin-left: auto;
+            margin-right: auto;
+            float: none;
+        }
+    }
+
+    &.no-col-padding {
+        margin-left: 0;
+        margin-right: 0;
+
+        [class^="col-"],
+        [class*=" col-"] {
+            padding-left: 0;
+            padding-right: 0;
+        }
+    }
+}
+
+.row {
+    @include make-grid-columns-float(sm);
+    @include make-grid($grid-columns, sm, width);
+    @include make-grid($grid-columns, sm, pull);
+    @include make-grid($grid-columns, sm, push);
+    @include make-grid($grid-columns, sm, offset);
+}
+
+@media (min-width: $default-content-width-sm) {
+    .row {
+        @include make-grid-columns-float(md);
+        @include make-grid($grid-columns, md, width);
+        @include make-grid($grid-columns, md, pull);
+        @include make-grid($grid-columns, md, push);
+        @include make-grid($grid-columns, md, offset);
+    }
+}
+
+@media (min-width: $default-content-width-md) {
+    .row {
+        @include make-grid-columns-float(lg);
+        @include make-grid($grid-columns, lg, width);
+        @include make-grid($grid-columns, lg, pull);
+        @include make-grid($grid-columns, lg, push);
+        @include make-grid($grid-columns, lg, offset);
+    }
+}
+
+@each $grid-col in $add-grid-columns {
+    $columns: nth($grid-col, 1);
+    .row-#{$columns} {
+        @include make-grid-columns-float(sm);
+        @include make-grid($columns, sm, width);
+        @include make-grid($columns, sm, pull);
+        @include make-grid($columns, sm, push);
+        @include make-grid($columns, sm, offset);
+    }
+}
+
+@media (min-width: $default-content-width-sm) {
+    @each $grid-col in $add-grid-columns {
+        $columns: nth($grid-col, 1);
+        .row-#{$columns} {
+            @include make-grid-columns-float(md);
+            @include make-grid($columns, md, width);
+            @include make-grid($columns, md, pull);
+            @include make-grid($columns, md, push);
+            @include make-grid($columns, md, offset);
+        }
+    }
+}
+
+@media (min-width: $default-content-width-md) {
+    @each $grid-col in $add-grid-columns {
+        $columns: nth($grid-col, 1);
+        .row-#{$columns} {
+            @include make-grid-columns-float(lg);
+            @include make-grid($columns, lg, width);
+            @include make-grid($columns, lg, pull);
+            @include make-grid($columns, lg, push);
+            @include make-grid($columns, lg, offset);
+        }
+    }
+}
+
+@media (max-width: $default-content-width-md) {
+    .container {
+        padding-left: $container-padding;
+        padding-right: $container-padding;
+
+        &.no-md-padding {
+            padding-left: 0;
+            padding-right: 0;
+        }
+    }
+}
+
+@media (max-width: $default-content-width-sm) {
+    .container {
+        &.no-sm-padding {
+            padding-left: 0;
+            padding-right: 0;
+        }
+    }
+}

@@ -1,0 +1,10 @@
+$default-gradient-top: "#000";
+$default-gradient-bottom: "#fff";
+
+@mixin linear-gradient($angle, $details...) {
+    background-image: -webkit-linear-gradient($angle, $details);
+    background-image: -moz-linear-gradient($angle, $details);
+    background-image: -ms-linear-gradient($angle, $details);
+    background-image: -o-linear-gradient($angle, $details);
+    background-image: linear-gradient($angle, $details);
+}

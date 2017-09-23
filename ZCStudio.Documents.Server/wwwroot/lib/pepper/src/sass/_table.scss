@@ -1,0 +1,138 @@
+table {
+    display: table;
+    width: 100%;
+    border-spacing:0;
+    border-collapse:separate;
+
+    th {
+        text-align: left;
+    }
+
+    td, th {
+        padding: $default-table-padding;
+    }
+
+    th, thead td {
+        font-weight: $default-font-weight-semi-bold;
+        background: $default-table-head-background;
+        border-bottom: 1px solid darken($default-table-head-background, 15%);
+    }
+}
+
+@each $color in $pepper-colors {
+    .table-#{nth($color, 1)} {
+        th, thead td {
+            border-bottom: 1px solid darken(nth($color, 2), 15%);
+            background: nth($color, 2);
+            color: #fff;
+        }
+    }
+}
+
+@each $color in $pepper-colors {
+    .table-row-#{nth($color, 1)} td {
+        background: lighten(nth($color, 2), 35%);
+    }
+}
+
+.table-bordered {
+    tbody:first-child {
+        tr:first-child > * {
+            border-top: 1px solid $default-table-border-color;
+        }
+    }
+
+    td:first-child,
+    th:first-child {
+        border-left: 1px solid $default-table-border-color;
+    }
+
+    td:last-child,
+    th:last-child {
+        border-right: 1px solid $default-table-border-color;
+    }
+
+    tr:last-child td,
+    tr:last-child th {
+        border-bottom: 1px solid $default-table-border-color;
+    }
+
+    thead {
+        td:first-child,
+        th:first-child {
+            border-left: 0;
+        }
+
+        td:last-child,
+        th:last-child {
+            border-right: 0;
+        }
+    }
+}
+
+.table-rounded {
+    @include border-radius;
+
+    tbody:first-child {
+        tr:first-child td,
+        tr:first-child th {
+            &:first-child {
+                @include border-top-left-radius;
+            }
+            &:last-child {
+                @include border-top-right-radius;
+            }
+        }
+    }
+
+    thead th:first-child,
+    thead td:first-child {
+        @include border-top-left-radius;
+    }
+
+    thead th:last-child,
+    thead td:last-child {
+        @include border-top-right-radius;
+    }
+
+    tr:last-child {
+        td:first-child {
+            @include border-bottom-left-radius;
+        }
+        td:last-child {
+            @include border-bottom-right-radius;
+        }
+    }
+}
+
+.table-striped {
+    tbody {
+        tr.even,
+        tr:nth-child(even) {
+            background: $default-table-background-even;
+        }
+        tr.odd,
+        tr:nth-child(odd) {
+            background: $default-table-background-odd;
+        }
+    }
+}
+
+.table-highlight-first {
+    tr td:first-child {
+        font-weight: $default-font-weight-semi-bold;
+    }
+}
+
+@media (max-width: $default-content-width-md) {
+    .table-responsive {
+        border: 1px solid $default-border-color;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        width: 100%;
+
+        table.table-bordered td {
+            border: 0;
+        }
+    }
+}

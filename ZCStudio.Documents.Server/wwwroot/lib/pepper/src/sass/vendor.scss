@@ -1,0 +1,16 @@
+@import "config/variables";
+@import "config/mixins/mixins";
+@import "custom/custom-mixins";
+
+//vendor
+@import "vendor/chosen";
+@import "vendor/font-awesome";
+@import "vendor/magnific-popup";
+
+$slick-arrow-color: $default-font-color;
+@import "vendor/slick";
+
+//changed vendor
+@import "vendor/chosen-override";
+@import "vendor/font-awesome-override";
+@import "vendor/magnific-popup-override";

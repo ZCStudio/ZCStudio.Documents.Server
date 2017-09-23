@@ -1,0 +1,54 @@
+.notify-holder {
+    position: fixed;
+    z-index: 950;
+    max-width: 250px;
+
+    .notify {
+        margin: 10px;
+        padding: 8px 10px;
+        @include border-radius;
+        min-width: 150px;
+        @include drop-shadow(0, 0, 5px, 0.3);
+        position: relative;
+        @include animation-duration(0.2s);
+
+        .notify-close {
+            background: transparent;
+            border: none;
+            position: absolute;
+            right: 10px;
+            top: 8px;
+        }
+    }
+}
+
+.notify-top-left {
+    top: 0;
+    left: 0;
+}
+.notify-top-right {
+    top: 0;
+    right: 0;
+}
+.notify-bottom-left {
+    bottom: 0;
+    left: 0;
+}
+.notify-bottom-right {
+    bottom: 0;
+    right: 0;
+}
+
+.notify-closable {
+    padding-right: 25px;
+}
+
+@each $color in $pepper-colors {
+    .notify-#{nth($color, 1)} {
+        border: 1px solid lighten(nth($color, 2), 20%);
+        background: lighten(nth($color, 2), 30%);
+        color: darken(nth($color, 2), 20%);
+    }
+}
+
+

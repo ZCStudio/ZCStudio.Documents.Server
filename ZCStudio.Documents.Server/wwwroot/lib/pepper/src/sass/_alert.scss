@@ -1,0 +1,44 @@
+.alert {
+    border: 1px solid darken($default-color, 10%);
+    @include border-radius();
+    background: $default-color;
+    padding: 10px;
+    position: relative;
+}
+
+.alert-closeable {
+    padding-right: 30px;
+
+    .close {
+        font-size: 1.3em;
+        float: right;
+        position: relative;
+        left: 15px;
+        top: -5px;
+        background: transparent;
+        border: 0;
+        color: inherit;
+        font-weight: $default-font-weight-bold;
+
+        &:hover {
+            @include opacity(0.8);
+        }
+    }
+}
+
+@each $color in $pepper-colors {
+    .alert-#{nth($color, 1)} {
+        border: 1px solid lighten(nth($color, 2), 20%);
+        background: lighten(nth($color, 2), 30%);
+        color: darken(nth($color, 2), 20%);
+
+        a {
+            color: darken(nth($color, 2), 20%);
+            text-decoration: underline;
+
+            &:hover {
+                color: darken(nth($color, 2), 30%);
+            }
+        }
+    }
+}

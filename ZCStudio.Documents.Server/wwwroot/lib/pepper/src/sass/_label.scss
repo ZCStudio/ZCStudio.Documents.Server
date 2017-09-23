@@ -1,0 +1,27 @@
+.label {
+    @include border-radius;
+    display: inline-block;
+    padding: 2px 5px;
+    color: $default-font-color;
+    text-align: center;
+    background: $default-color;
+    border: 0px solid darken($default-color, 5%);
+}
+
+.label-block {
+    width: 100%;
+}
+
+.label-round {
+    @include border-radius(50px);
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+@each $color in $pepper-colors {
+    .label-#{nth($color, 1)} {
+        color: #fff;
+        background: nth($color, 2);
+        border-color: darken(nth($color, 2), 5%);
+    }
+}

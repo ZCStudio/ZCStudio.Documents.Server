@@ -1,0 +1,29 @@
+.jumbo-container {
+    background: $default-jumbo-background;
+}
+
+.jumbo {
+    position: relative;
+}
+
+.jumbo-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.jumbo-text {
+    position: absolute;
+    bottom: 10%;
+    right: 0px;
+    font-size: 3em;
+    padding: 15px;
+    text-align: right;
+}
+
+@media (max-width: $default-content-width-sm) {
+    .jumbo-text {
+        font-size: 2.5em;
+        position: static;
+    }
+}

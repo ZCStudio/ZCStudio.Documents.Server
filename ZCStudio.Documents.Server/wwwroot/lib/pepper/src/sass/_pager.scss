@@ -1,0 +1,35 @@
+.pager {
+    @include clear-fix;
+    margin: 0 0 $default-margin-bottom;
+    padding: 0;
+    list-style: none;
+    display: block;
+    text-align: center;
+
+    li {
+        display: inline;
+
+        a {
+            @extend .btn;
+        }
+
+        &.disabled a {
+            @include opacity(0.6);
+            @include disable-mouse;
+        }
+
+        &.pager-previous {
+            float: left;
+        }
+
+        &.pager-next {
+            float: right;
+        }
+    }
+}
+
+@each $size in $pepper-sizes {
+    .pager-#{$size} li a {
+        @extend .btn-#{$size};
+    }
+}

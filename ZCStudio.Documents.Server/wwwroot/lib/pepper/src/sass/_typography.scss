@@ -1,0 +1,132 @@
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    font-weight: $default-font-weight-semi-bold;
+}
+
+h1 {
+    font-size: 1.8em;
+}
+h2 {
+    font-size: 1.6em;
+}
+h3 {
+    font-size: 1.4em;
+}
+h4 {
+    font-size: 1.2em;
+}
+h5 {
+    font-size: 1em;
+}
+h6 {
+    font-size: 0.8em;
+}
+
+@each $color in $pepper-colors {
+    .font-#{nth($color, 1)} {
+        color: nth($color, 2);
+    }
+}
+
+.font-disabled {
+    @include opacity(0.6);
+}
+
+.font-underline {
+    text-decoration: underline;
+}
+
+.font-italic {
+    font-style: italic;
+}
+
+.font-bold {
+    font-weight: bold;
+}
+
+.font-lowercase {
+    text-transform: lowercase;
+}
+
+.font-uppercase {
+    text-transform: uppercase;
+}
+
+.font-capitalize {
+    text-transform: capitalize;
+}
+
+@each $color in $pepper-colors {
+    .bg-#{nth($color, 1)} {
+        color: #fff;
+        background: nth($color, 2);
+    }
+}
+
+.bg-lighten {
+    @each $color in $pepper-colors {
+        &.bg-#{nth($color, 1)} {
+            color: $default-font-color;
+            background: lighten(nth($color, 2), 30%);
+        }
+    }
+}
+
+.lead {
+    font-size: 1.2em;
+    font-weight: $default-font-weight-semi-bold;
+    letter-spacing: 0.10em;
+}
+
+.font-xs        { font-size: 0.7em; }
+.font-sm, small { font-size: 0.85em; }
+.font-lg        { font-size: 1.3em; }
+.font-xl        { font-size: 1.6em; }
+
+blockquote {
+    @include clear-fix;
+
+    border-left: 5px solid $default-border-color;
+    font-weight: $default-font-weight-semi-bold;
+    padding: 10px 20px;
+
+    small {
+        @include opacity(0.6);
+    }
+
+    @each $color in $pepper-colors {
+        &.blockquote-#{nth($color, 1)} {
+            border-color: nth($color, 2);
+        }
+    }
+}
+
+code {
+    background: $default-color;
+    color: $danger-color;
+    padding: 0 3px;
+    @include border-radius(2px);
+}
+
+ol,
+ul {
+    padding-left: 30px;
+    margin: 10px 0;
+
+    &.no-style {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        & > li {
+            margin: 0;
+            padding: 0;
+        }
+    }
+
+    &.li-margin {
+        & > li {
+            margin-bottom: $default-paragraph-padding;
+        }
+    }
+}

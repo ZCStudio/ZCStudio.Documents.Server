@@ -1,0 +1,81 @@
+.accordion-element {
+    border: 1px solid $default-border-color;
+    border-bottom-width: 0;
+
+    &.is-open {
+        border-bottom-width: 0;
+
+        .accordion-title {
+            border-bottom-width: 1px;
+        }
+
+        .accordion-content {
+            display: block;
+        }
+
+        .caret {
+            @extend .caret-top;
+        }
+    }
+
+    &:first-child, &:first-child .accordion-title {
+        @include border-top-radius;
+    }
+
+    &:last-child, &:last-child .accordion-title {
+        @include border-bottom-radius;
+    }
+
+    &:last-child {
+        border-bottom-width: 1px;
+    }
+
+    &.is-open:last-child .accordion-title {
+        @include border-bottom-radius(0);
+    }
+}
+
+.accordion-title {
+    background: $default-accordion-title-background;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-weight: $default-font-weight-semi-bold;
+    border-bottom: 0 solid $default-border-color;
+
+    .caret {
+        float: right;
+        margin-top: $default-font-size / 2;
+    }
+
+    &:hover {
+        background: darken($default-accordion-title-background, 3%);
+    }
+}
+
+.accordion-content {
+    @include clear-fix;
+    padding: 5px 10px;
+    display: none;
+    overflow: hidden;
+}
+
+@each $color in $pepper-colors {
+    .accordion-#{nth($color, 1)} {
+        border-color: darken(nth($color, 2), 5%);
+
+        .accordion-title {
+            color: #fff;
+            background: nth($color, 2);
+            border-bottom-color: darken(nth($color, 2), 5%);
+
+            &:hover {
+                background: darken(nth($color, 2), 3%);
+            }
+
+            .caret {
+                border-top-color: #fff;
+                border-bottom-color: #fff;
+            }
+        }
+    }
+}

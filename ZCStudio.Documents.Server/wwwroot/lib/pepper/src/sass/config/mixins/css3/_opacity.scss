@@ -1,0 +1,7 @@
+@mixin opacity($opacity) {
+    $msOpacity: $opacity*100;
+    -moz-opacity: $opacity;
+    -khtml-opacity: $opacity;
+    opacity: $opacity;
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=#{round($opacity * 100)});
+}
