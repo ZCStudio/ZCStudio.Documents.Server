@@ -4,9 +4,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.IO;
 using ZCStudio.Documents.Server.Filters;
-using ZCStudio.Documents.Server.Models;
 using ZCStudio.Documents.Server.Middlewares;
+using ZCStudio.Documents.Server.Models;
 
 namespace ZCStudio.Documents.Server
 {
@@ -18,8 +19,8 @@ namespace ZCStudio.Documents.Server
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddJsonFile("server.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"server.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                .AddJsonFile(Path.Combine("Config", "server.json"), optional: false, reloadOnChange: true)
+                .AddJsonFile(Path.Combine("Config", $"server.{env.EnvironmentName}.json"), optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
