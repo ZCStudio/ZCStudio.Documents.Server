@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using ZCStudio.Documents.Server.Configuration;
 using ZCStudio.Documents.Server.Models;
 
 namespace ZCStudio.Documents.Server.Controllers
@@ -9,12 +9,12 @@ namespace ZCStudio.Documents.Server.Controllers
     public class HomeController : Controller
     {
         public List<DocCard> docCards;
-        public DocsConfig docsConfig;
+        public Config config;
 
-        public HomeController(IOptionsSnapshot<List<DocCard>> docCardsOptionsAccessor, IOptionsSnapshot<DocsConfig> docsConfigOptionsAccessor)
+        public HomeController(IOptionsSnapshot<List<DocCard>> docCardsOptionsAccessor, IOptionsSnapshot<Config> configOptionsAccessor)
         {
             docCards = docCardsOptionsAccessor.Value;
-            docsConfig = docsConfigOptionsAccessor.Value;
+            config = configOptionsAccessor.Value;
         }
 
         public IActionResult Index()

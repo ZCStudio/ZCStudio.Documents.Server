@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Serialization;
 using System.IO;
 using System.Linq;
+using ZCStudio.Documents.Server.Configuration;
 using ZCStudio.Documents.Server.Models;
 using ZCStudio.Documents.Server.Tools;
 
@@ -12,18 +13,18 @@ namespace ZCStudio.Documents.Server.Controllers
     [Route("Document/api")]
     public class DocumentApiController : Controller
     {
-        private DocsConfig docsConfig;
+        private Config config;
 
-        public DocumentApiController(IOptionsSnapshot<DocsConfig> docsConfigOptionsAccessor)
+        public DocumentApiController(IOptionsSnapshot<Config> configOptionsAccessor)
         {
-            docsConfig = docsConfigOptionsAccessor.Value;
+            config = configOptionsAccessor.Value;
         }
 
         // GET: api/DocApi
         [HttpGet]
         public IActionResult Get()
         {
-            var docpath = docsConfig.GetDocPath();
+            var docpath = config.GetDocPath();
             if (!Directory.Exists(docpath))
             {
                 return Json(new { IsSuccess = false });
@@ -37,7 +38,7 @@ namespace ZCStudio.Documents.Server.Controllers
         [HttpGet("{docName}", Name = "Get")]
         public IActionResult Get(string docName)
         {
-            var docpath = docsConfig.GetDocPath(docName);
+            var docpath = config.GetDocPath(docName);
             if (!Directory.Exists(docpath))
             {
                 return Json(new { IsSuccess = false });
@@ -50,7 +51,7 @@ namespace ZCStudio.Documents.Server.Controllers
         [HttpGet("GetFileText/{path}")]
         public IActionResult GetFileText(string path)
         {
-            var docpath = docsConfig.GetDocPath(path);
+            var docpath = config.GetDocPath(path);
             if (!System.IO.File.Exists(docpath))
             {
                 return Json(new { IsSuccess = false });
@@ -64,7 +65,7 @@ namespace ZCStudio.Documents.Server.Controllers
         [HttpGet("GetFile/{path}")]
         public IActionResult GetFile(string path)
         {
-            var docpath = docsConfig.GetDocPath(path);
+            var docpath = config.GetDocPath(path);
             if (!System.IO.File.Exists(docpath))
             {
                 return NotFound();
@@ -84,12 +85,12 @@ namespace ZCStudio.Documents.Server.Controllers
             {
                 return null;
             }
-            DocTreeNode root = new DocTreeNode(docsConfig.GetDocPath(), directory);
+            DocTreeNode root = new DocTreeNode(config.GetDocPath(), directory);
             foreach (var file in directory.GetFileSystemInfos().OrderBy(i => i.Name, new FileNameComparer()))
             {
                 if (file is FileInfo)
                 {
-                    root.AppendNode(new DocTreeNode(docsConfig.GetDocPath(), file));
+                    root.AppendNode(new DocTreeNode(config.GetDocPath(), file));
                 }
                 else
                 {

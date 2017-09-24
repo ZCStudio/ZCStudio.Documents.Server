@@ -12,6 +12,7 @@ namespace ZCStudio.Documents.Server
                 .AddJsonFile("hosting.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
+
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())

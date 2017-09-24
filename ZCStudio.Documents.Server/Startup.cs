@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.IO;
+using ZCStudio.Documents.Server.Configuration;
 using ZCStudio.Documents.Server.Filters;
 using ZCStudio.Documents.Server.Middlewares;
 using ZCStudio.Documents.Server.Models;
@@ -37,7 +38,7 @@ namespace ZCStudio.Documents.Server
             });
             services.AddSingleton(Configuration);
             services.Configure<List<DocCard>>(Configuration.GetSection("Docs"));
-            services.Configure<DocsConfig>(Configuration.GetSection("Config"));
+            services.Configure<Config>(Configuration.GetSection("Config"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

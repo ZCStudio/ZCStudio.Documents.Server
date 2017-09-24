@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 
-namespace ZCStudio.Documents.Server.Models
+namespace ZCStudio.Documents.Server.Configuration
 {
-    public class DocsConfig
+    public class Config
     {
         public string RootPath { get; set; } = "Docs";
 
