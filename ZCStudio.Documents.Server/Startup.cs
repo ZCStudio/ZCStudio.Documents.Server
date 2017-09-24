@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using ZCStudio.Documents.Server.Filters;
 using ZCStudio.Documents.Server.Models;
+using ZCStudio.Documents.Server.Middlewares;
 
 namespace ZCStudio.Documents.Server
 {
@@ -43,6 +44,8 @@ namespace ZCStudio.Documents.Server
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            app.UseRequestLoggerMiddleware();
 
             if (env.IsDevelopment())
             {
