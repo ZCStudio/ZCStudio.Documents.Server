@@ -15,7 +15,10 @@
     </environment>
 }
 
-<div id="content" class="container-fluid"></div>
+<div class="container-fluid">
+    <h3 id="docTitle"></h3>
+    <div id="content" class="container-fluid"></div>
+</div>
 
 @section Scripts{
     <environment names="Development">
@@ -61,6 +64,7 @@
                 var index1 = file.FilePath.lastIndexOf(".");
                 var index2 = file.FilePath.length;
                 var extname = file.FilePath.substring(index1, index2).toLowerCase();
+                document.getElementById('docTitle').innerHTML = file.DocName;
                 switch (extname) {
                     case ".md":
                         MDFile(file);

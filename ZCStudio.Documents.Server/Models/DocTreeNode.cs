@@ -13,6 +13,11 @@ namespace ZCStudio.Documents.Server.Models
             {
                 FilePath = sysinfo.FullName.Substring(rootPath.Length).Trim(Path.DirectorySeparatorChar);
             }
+            if (sysinfo is FileInfo)
+            {
+                var docname = Path.GetFileNameWithoutExtension(sysinfo.Name);
+                DocName = docname.Substring(docname.IndexOf('.') + 1);
+            }
         }
 
         public DocTreeNode(string rootPath, DirectoryInfo directory) : this(rootPath, directory as FileSystemInfo)
@@ -28,6 +33,8 @@ namespace ZCStudio.Documents.Server.Models
         public string Name { get; set; }
 
         public string FilePath { get; set; }
+
+        public string DocName { get; } = string.Empty;
 
         public string ParentId
         {
