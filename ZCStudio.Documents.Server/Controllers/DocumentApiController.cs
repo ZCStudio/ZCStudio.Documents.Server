@@ -6,6 +6,8 @@ using System.Linq;
 using ZCStudio.Documents.Server.Configuration;
 using ZCStudio.Documents.Server.Models;
 using ZCStudio.Documents.Server.Tools;
+using System.Text.Encodings.Web;
+using System.Net;
 
 namespace ZCStudio.Documents.Server.Controllers
 {
@@ -51,7 +53,7 @@ namespace ZCStudio.Documents.Server.Controllers
         [HttpGet("GetFileText/{path}")]
         public IActionResult GetFileText(string path)
         {
-            var docpath = config.GetDocPath(path);
+            var docpath = config.GetDocPath(WebUtility.UrlDecode(path));
             if (!System.IO.File.Exists(docpath))
             {
                 return Json(new { IsSuccess = false });
@@ -65,7 +67,7 @@ namespace ZCStudio.Documents.Server.Controllers
         [HttpGet("GetFile/{path}")]
         public IActionResult GetFile(string path)
         {
-            var docpath = config.GetDocPath(path);
+            var docpath = config.GetDocPath(WebUtility.UrlDecode(path));
             if (!System.IO.File.Exists(docpath))
             {
                 return NotFound();

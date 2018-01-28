@@ -38,7 +38,8 @@
             imageUrlField: 'ImageUrl',
             imageHtmlField: 'ImageHtml',
             dataBound: function (e) {
-                var nodeid = decodeURI('@Html.UrlEncoder.Encode(Model.FilePath)');
+                debugger;
+                var nodeid = decodeURIComponent('@Html.UrlEncoder.Encode(Model.FilePath)');
                 var node = tree.getNodeById(nodeid);
                 var data = tree.getDataById(nodeid);
                 var parentnode = tree.getNodeById(data.ParentId);
