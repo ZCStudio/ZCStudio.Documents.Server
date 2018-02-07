@@ -45,6 +45,7 @@
   ],
   "Config": {
     "RootPath": "/home/zack/workstation/Repos/ZCStudio.Documents.Server/Examples",
+    // "RootPath": "C:\\Users\\ZhangcChao\\Desktop\\dev\\ftp\\doc",
     "DefaultMDName": "介绍.md"
   }
 }
