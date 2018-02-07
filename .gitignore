@@ -260,5 +260,3 @@ paket-files/
 __pycache__/
 *.pyc
 ZCStudio.Documents.Server/Config/server.Development.json
-ZCStudio.Documents.Server/Config/server.Development.json
-ZCStudio.Documents.Server/Config/server.Development.json
