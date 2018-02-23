@@ -14,19 +14,12 @@ namespace ZCStudio.Documents.Server
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IHostingEnvironment env, IConfiguration configuration)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddJsonFile(Path.Combine("Config", "server.json"), optional: false, reloadOnChange: true)
-                .AddJsonFile(Path.Combine("Config", $"server.{env.EnvironmentName}.json"), optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
-            Configuration = builder.Build();
+            Configuration = configuration;
         }
 
-        public IConfigurationRoot Configuration { get; }
+        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -36,7 +29,7 @@ namespace ZCStudio.Documents.Server
             {
                 options.Filters.Add<NavBarFilter>();
             });
-            services.AddSingleton(Configuration);
+            //services.AddSingleton(Configuration);
             services.Configure<List<DocCard>>(Configuration.GetSection("Docs"));
             services.Configure<Config>(Configuration.GetSection("Config"));
         }
@@ -67,6 +60,7 @@ namespace ZCStudio.Documents.Server
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id=\"\"}");
             });
+
         }
     }
 }

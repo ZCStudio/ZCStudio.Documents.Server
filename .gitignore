@@ -259,4 +259,6 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
-ZCStudio.Documents.Server/Config/server.Development.json
+
+# 开发文件
+*.Development.json

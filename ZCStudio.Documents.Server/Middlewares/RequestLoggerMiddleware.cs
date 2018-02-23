@@ -14,17 +14,17 @@ namespace ZCStudio.Documents.Server.Middlewares
         private readonly RequestDelegate _next;
         private readonly ILogger _logger;
 
-        public RequestLoggerMiddleware(RequestDelegate next, ILoggerFactory loggerFactory)
+        public RequestLoggerMiddleware(RequestDelegate next, ILogger<RequestLoggerMiddleware> logger)
         {
-            _logger = loggerFactory.CreateLogger<RequestLoggerMiddleware>();
+            _logger = logger;
             _next = next;
         }
 
         public async Task Invoke(HttpContext httpContext)
         {
-            _logger.LogInformation("Handling request: " + httpContext.Request.Path);
+            _logger.LogInformation("Handling request:{Path}", httpContext.Request.Path);
             await _next.Invoke(httpContext);
-            _logger.LogInformation("Finish Handling request: ");
+            _logger.LogInformation("Finish Handling request:{Path}", httpContext.Request.Path);
         }
     }
 
