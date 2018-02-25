@@ -5,19 +5,22 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace ZCStudio.Documents.Server
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static void Main(string[] args) => RunAsync(args).Wait();
+
+        private static Task RunAsync(string[] args)
         {
             var hostConfig = new ConfigurationBuilder()
-                .AddJsonFile(Path.Combine("Config", "hosting.json"), optional: false, reloadOnChange: true)
-                .AddJsonFile(Path.Combine("Config", $"hosting.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json"), optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .AddCommandLine(args)
-                .Build();
+                            .AddJsonFile(Path.Combine("Config", "hosting.json"), optional: false, reloadOnChange: true)
+                            .AddJsonFile(Path.Combine("Config", $"hosting.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json"), optional: true, reloadOnChange: true)
+                            .AddEnvironmentVariables()
+                            .AddCommandLine(args)
+                            .Build();
 
             var host = new WebHostBuilder()
                 .UseContentRoot(Directory.GetCurrentDirectory())
@@ -55,7 +58,7 @@ namespace ZCStudio.Documents.Server
                 .Build();
 
             var e = host.Services.GetService(typeof(IHostingEnvironment));
-            host.Run();
+            return host.RunAsync();
         }
     }
 }
