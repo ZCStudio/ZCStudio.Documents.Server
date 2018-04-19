@@ -29,7 +29,6 @@
     <script type="text/javascript">
 
         function MDFile(file) {
-            debugger;
             var mdpath = 'api/GetFileText/' +encodeURIComponent( file.FilePath);
             $.ajax({
                 url: mdpath,
