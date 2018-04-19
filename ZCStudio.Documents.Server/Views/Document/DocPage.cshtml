@@ -46,7 +46,23 @@
         }
 
         $(document).ready(function () {
+            var rendererMD = new marked.Renderer();
+            rendererMD.link = function (href,attr, text) {
+                var attrs= attr.split("|");
+                var target;
+                if (attr.length>=1)
+                {
+                    target='title="'+attrs[0]+'"';
+                }
+                if (attr.length>=2)
+                {
+                    target='target="'+attrs[1]+'"';
+                }
+                return '<a href="'+href+'" title="'+attrs[0]+'"'+target+'>'+text+'</a>';
+            }
+
             marked.setOptions({
+                renderer: rendererMD,
                 highlight: function (code) {
                     return hljs.highlightAuto(code).value;
                 }
