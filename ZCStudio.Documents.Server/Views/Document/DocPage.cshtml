@@ -48,17 +48,22 @@
         $(document).ready(function () {
             var rendererMD = new marked.Renderer();
             rendererMD.link = function (href,attr, text) {
-                var attrs= attr.split("|");
-                var target;
-                if (attr.length>=1)
+                if (!attr)
                 {
-                    target='title="'+attrs[0]+'"';
+                    attr='';
                 }
-                if (attr.length>=2)
+                var attrs= attr.split("|");
+                var title='',
+                    target='';
+                if (attrs.length>=1)
+                {
+                    title='title="'+attrs[0]+'"';
+                }
+                if (attrs.length>=2)
                 {
                     target='target="'+attrs[1]+'"';
                 }
-                return '<a href="'+href+'" title="'+attrs[0]+'"'+target+'>'+text+'</a>';
+                return '<a href="'+href+'" '+title+'"'+target+'>'+text+'</a>';
             }
 
             marked.setOptions({
