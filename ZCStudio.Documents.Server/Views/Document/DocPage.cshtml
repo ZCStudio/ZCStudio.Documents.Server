@@ -47,23 +47,44 @@
 
         $(document).ready(function () {
             var rendererMD = new marked.Renderer();
-            rendererMD.link = function (href,attr, text) {
+            rendererMD.link = function (href, attr, text) {
                 if (!attr)
                 {
                     attr='';
                 }
                 var attrs= attr.split("|");
-                var title='',
-                    target='';
+                var title='',target='';
                 if (attrs.length>=1)
                 {
-                    title='title="'+attrs[0]+'"';
+                    title=' title="'+attrs[0]+'" ';
                 }
                 if (attrs.length>=2)
                 {
-                    target='target="'+attrs[1]+'"';
+                    target=' target="'+attrs[1]+'" ';
                 }
-                return '<a href="'+href+'" '+title+' '+target+'>'+text+'</a>';
+                return '<a href="'+href+'" '+title+target+'>'+text+'</a>';
+            }
+            rendererMD.image=function(href, attr, text){
+                if (!attr)
+                {
+                    attr='';
+                }
+                var attrs= attr.split("|");
+                var title='',width='',height='';
+                if (attrs.length>=1)
+                {
+                    title=' title="'+attrs[0]+'" ';
+                }
+                if (attrs.length>=2)
+                {
+                    width='  width="'+attrs[1]+'"';
+                }
+                if (attrs.length>=3)
+                {
+                    height=' height="'+attrs[2]+'" ';
+                }
+
+                return '<img alt="'+text+'" src="'+href+'"'+title+width+height+'>';
             }
 
             marked.setOptions({
