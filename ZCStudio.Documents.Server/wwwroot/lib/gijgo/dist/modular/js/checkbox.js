@@ -1,20 +1,20 @@
 /*
- * Gijgo Checkbox v1.5.0
+ * Gijgo Checkbox v1.9.6
  * http://gijgo.com/checkbox
  *
- * Copyright 2014, 2017 gijgo.com
+ * Copyright 2014, 2018 gijgo.com
  * Released under the MIT license
  */
 /* global window alert jQuery */
-/**  */if (typeof (gj.checkbox) === 'undefined') {
-    gj.checkbox = {};
-}
+/**  */gj.checkbox = {
+    plugins: {}
+};
 
 gj.checkbox.config = {
     base: {
         /** The name of the UI library that is going to be in use. Currently we support only Material Design and Bootstrap.          */        uiLibrary: 'materialdesign',
-
-        iconsLibrary: 'materialicons',
+        
+        /** The name of the icons library that is going to be in use. Currently we support Material Icons, Font Awesome and Glyphicons.         */        iconsLibrary: 'materialicons',
 
         style: {
             wrapperCssClass: 'gj-checkbox-md',
@@ -32,7 +32,7 @@ gj.checkbox.config = {
 
     bootstrap4: {
         style: {
-            wrapperCssClass: 'gj-checkbox-bootstrap'
+            wrapperCssClass: 'gj-checkbox-bootstrap gj-checkbox-bootstrap-4'
         },
         iconsLibrary: 'materialicons'
     },
@@ -40,7 +40,7 @@ gj.checkbox.config = {
     materialicons: {
         style: {
             iconsCssClass: 'gj-checkbox-material-icons',
-            spanCssClass: 'material-icons'
+            spanCssClass: 'gj-icon'
         }
     },
 
@@ -48,6 +48,13 @@ gj.checkbox.config = {
         style: {
             iconsCssClass: 'gj-checkbox-glyphicons',
             spanCssClass: ''
+        }
+    },
+
+    fontawesome: {
+        style: {
+            iconsCssClass: 'gj-checkbox-fontawesome',
+            spanCssClass: 'fa'
         }
     }
 };

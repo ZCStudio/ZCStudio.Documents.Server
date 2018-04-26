@@ -1,40 +1,17 @@
 /*
- * Gijgo Grid v1.5.0
+ * Gijgo Grid v1.9.6
  * http://gijgo.com/grid
  *
- * Copyright 2014, 2017 gijgo.com
+ * Copyright 2014, 2018 gijgo.com
  * Released under the MIT license
  */
-if (typeof (gj.grid) === 'undefined') {
-    gj.grid = {
-        plugins: {},
-        messages: []
-    };
-}
-
-gj.grid.messages['en-us'] = {
-    First: 'First',
-    Previous: 'Previous',
-    Next: 'Next',
-    Last: 'Last',
-    Page: 'Page',
-    FirstPageTooltip: 'First Page',
-    PreviousPageTooltip: 'Previous Page',
-    NextPageTooltip: 'Next Page',
-    LastPageTooltip: 'Last Page',
-    Refresh: 'Refresh',
-    Of: 'of',
-    DisplayingRecords: 'Displaying records',
-    RowsPerPage: 'Rows per page:',
-    Edit: 'Edit',
-    Delete: 'Delete',
-    Update: 'Update',
-    Cancel: 'Cancel',
-    NoRecordsFound: 'No records found.',
-    Loading: 'Loading...'
-};
 /* global window alert jQuery gj */
-/**  */gj.grid.config = {
+/**  */gj.grid = {
+    plugins: {},
+    messages: {}
+};
+
+gj.grid.config = {
     base: {
         /** The data source for the grid.         */        dataSource: undefined,
 
@@ -59,7 +36,7 @@ gj.grid.messages['en-us'] = {
             /** The field name to which the column is bound.
              * If the column.title is not defined this value is used as column.title.             */            field: undefined,
 
-            /** This setting control the alignment of the text in the cell.             */            align: 'left',
+            /** This setting control the alignment of the text in the cell.             */            align: undefined,
 
             /** The name(s) of css class(es) that are going to be applied to all cells inside that column, except the header cell.             */            cssClass: undefined,
 
@@ -71,14 +48,14 @@ gj.grid.messages['en-us'] = {
              * This setting can be in use only with combination of type icon.             */            icon: undefined,
 
             /** Configuration object with event names as keys and functions as values that are going to be bind to each cell from the column.
-             * Each function is going to receive event information as a parameter with info in the "data" field for id, field name and record data.             */            events: undefined,
+             * Each function is going to receive event information as a parameter with info in the 'data' field for id, field name and record data.             */            events: undefined,
 
             /** Format the date when the type of the column is date.             */            format: 'mm/dd/yyyy',
 
             /** Number of decimal digits after the decimal point.             */            decimalDigits: undefined,
 
             /** Template for the content in the column.
-             * Use curly brackets "{}" to wrap the names of data source columns from server response.             */            tmpl: undefined,
+             * Use curly brackets '{}' to wrap the names of data source columns from server response.             */            tmpl: undefined,
 
             /** If set to true stop event propagation when event occur.             */            stopPropagation: false,
 
@@ -121,6 +98,12 @@ gj.grid.messages['en-us'] = {
 
         /** Minimum width of the grid.         */        minWidth: undefined,
 
+        /** This configuration option manage the behaviour of the header row height.
+         * Auto scale if set to to 'autogrow'. All body rows are with the same height if set to 'fixed'.         */        headerRowHeight: 'fixed',
+
+        /** This configuration option manage the behaviour of the body row height.
+         * Auto scale if set to to 'autogrow'. All body rows are with the same height if set to 'fixed'.         */        bodyRowHeight: 'autogrow',
+
         /** The size of the font in the grid.         */        fontSize: undefined,
 
         /** Name of column that contains the record id.          */        primaryKey: undefined,
@@ -137,10 +120,9 @@ gj.grid.messages['en-us'] = {
             loadingText: 'gj-grid-loading-text',
             header: {
                 cell: undefined,
-                sortable: 'gj-cursor-pointer'
+                sortable: 'gj-cursor-pointer gj-unselectable'
             },
             content: {
-                rowHover: undefined,
                 rowSelected: 'gj-grid-md-select'
             }
         },
@@ -156,7 +138,6 @@ gj.grid.messages['en-us'] = {
             wrapper: 'gj-grid-wrapper',
             table: 'gj-grid gj-grid-bootstrap gj-grid-bootstrap-3 table table-bordered table-hover',
             content: {
-                rowHover: undefined,
                 rowSelected: 'active'
             }
         },
@@ -172,7 +153,6 @@ gj.grid.messages['en-us'] = {
             wrapper: 'gj-grid-wrapper',
             table: 'gj-grid gj-grid-bootstrap gj-grid-bootstrap-4 table table-bordered table-hover',
             content: {
-                rowHover: undefined,
                 rowSelected: 'active'
             }
         },
@@ -183,8 +163,8 @@ gj.grid.messages['en-us'] = {
 
     materialicons: {
         icons: {
-            asc: '<i class="material-icons">arrow_upward</i>',
-            desc: '<i class="material-icons">arrow_downward</i>'
+            asc: '<i class="gj-icon arrow-upward" />',
+            desc: '<i class="gj-icon arrow-downward" />'
         }
     },
 
@@ -206,77 +186,77 @@ gj.grid.messages['en-us'] = {
 /**  */gj.grid.events = {
     /**
      * Event fires before addition of an empty row to the grid.     */    beforeEmptyRowInsert: function ($grid, $row) {
-        $grid.triggerHandler('beforeEmptyRowInsert', [$row]);
+        return $grid.triggerHandler('beforeEmptyRowInsert', [$row]);
     },
 
     /**
      * Event fired before data binding takes place.
      *     */    dataBinding: function ($grid, records) {
-        $grid.triggerHandler('dataBinding', [records]);
+        return $grid.triggerHandler('dataBinding', [records]);
     },
 
     /**
      * Event fires after the loading of the data in the grid.
      *     */    dataBound: function ($grid, records, totalRecords) {
-        $grid.triggerHandler('dataBound', [records, totalRecords]);
+        return $grid.triggerHandler('dataBound', [records, totalRecords]);
     },
 
     /**
      * Event fires after insert of a row in the grid during the loading of the data.     */    rowDataBound: function ($grid, $row, id, record) {
-        $grid.triggerHandler('rowDataBound', [$row, id, record]);
+        return $grid.triggerHandler('rowDataBound', [$row, id, record]);
     },
 
     /**
      * Event fires after insert of a cell in the grid during the loading of the data
      *     */    cellDataBound: function ($grid, $displayEl, id, column, record) {
-        $grid.triggerHandler('cellDataBound', [$displayEl, id, column, record]);
+        return $grid.triggerHandler('cellDataBound', [$displayEl, id, column, record]);
     },
 
     /**
      * Event fires on selection of row
      *     */    rowSelect: function ($grid, $row, id, record) {
-        $grid.triggerHandler('rowSelect', [$row, id, record]);
+        return $grid.triggerHandler('rowSelect', [$row, id, record]);
     },
 
     /**
      * Event fires on un selection of row
      *     */    rowUnselect: function ($grid, $row, id, record) {
-        $grid.triggerHandler('rowUnselect', [$row, id, record]);
+        return $grid.triggerHandler('rowUnselect', [$row, id, record]);
     },
 
     /**
      * Event fires before deletion of row in the grid.     */    rowRemoving: function ($grid, $row, id, record) {
-        $grid.triggerHandler('rowRemoving', [$row, id, record]);
+        return $grid.triggerHandler('rowRemoving', [$row, id, record]);
     },
 
     /**
      * Event fires when the grid.destroy method is called.
      *     */    destroying: function ($grid) {
-        $grid.triggerHandler('destroying');
+        return $grid.triggerHandler('destroying');
     },
 
     /**
      * Event fires when column is hidding
      *     */    columnHide: function ($grid, column) {
-        $grid.triggerHandler('columnHide', [column]);
+        return $grid.triggerHandler('columnHide', [column]);
     },
 
     /**
      * Event fires when column is showing
      *     */    columnShow: function ($grid, column) {
-        $grid.triggerHandler('columnShow', [column]);
+        return $grid.triggerHandler('columnShow', [column]);
     },
 
     /**
      * Event fires when grid is initialized.
      *     */    initialized: function ($grid) {
-        $grid.triggerHandler('initialized');
+        return $grid.triggerHandler('initialized');
     },
 
     /**
      * Event fires when the grid data is filtered.
      *     */    dataFiltered: function ($grid, records) {
-        $grid.triggerHandler('dataFiltered', [records]);
+        return $grid.triggerHandler('dataFiltered', [records]);
     }
 };
 
@@ -366,6 +346,12 @@ gj.grid.methods = {
         if (data.fontSize) {
             $grid.css('font-size', data.fontSize);
         }
+        if (data.headerRowHeight === 'autogrow') {
+            $grid.addClass('autogrow-header-row');
+        }
+        if (data.bodyRowHeight === 'fixed') {
+            $grid.addClass('fixed-body-rows');
+        }
         $grid.addClass(data.style.table);
         if ('checkbox' === data.selectionMethod) {
             data.columns.splice(gj.grid.methods.getColumnPositionNotInRole($grid), 0, {
@@ -400,7 +386,7 @@ gj.grid.methods = {
     },
 
     renderHeader: function ($grid) {
-        var data, columns, style, $thead, $row, $cell, i, $checkAllBoxes;
+        var data, columns, style, $thead, $row, $cell, $title, i, $checkAllBoxes;
 
         data = $grid.data();
         columns = data.columns;
@@ -425,10 +411,6 @@ gj.grid.methods = {
                 $cell.addClass(columns[i].headerCssClass);
             }
             $cell.css('text-align', columns[i].align || 'left');
-            if (columns[i].sortable) {
-                $cell.addClass(style.sortable);
-                $cell.on('click', gj.grid.methods.createSortHandler($grid, $cell, columns[i]));
-            }
             if ('checkbox' === data.selectionMethod && 'multiple' === data.selectionType &&
                 'checkbox' === columns[i].type && 'selectRow' === columns[i].role) {
                 $checkAllBoxes = $cell.find('input[data-role="selectAll"]');
@@ -445,7 +427,12 @@ gj.grid.methods = {
                     }
                 });
             } else {
-                $cell.append($('<div data-role="title"/>').html(typeof (columns[i].title) === 'undefined' ? columns[i].field : columns[i].title));
+                $title = $('<div data-role="title"/>').html(typeof (columns[i].title) === 'undefined' ? columns[i].field : columns[i].title);
+                $cell.append($title);
+                if (columns[i].sortable) {
+                    $title.addClass(style.sortable);
+                    $title.on('click', gj.grid.methods.createSortHandler($grid, columns[i]));
+                }
             }
             if (columns[i].hidden) {
                 $cell.hide();
@@ -456,7 +443,7 @@ gj.grid.methods = {
         $thead.empty().append($row);
     },
 
-    createSortHandler: function ($grid, $cell, column) {
+    createSortHandler: function ($grid, column) {
         return function () {
             var data, params = {};
             if ($grid.count() > 0) {
@@ -470,9 +457,8 @@ gj.grid.methods = {
     },
 
     updateHeader: function ($grid) {
-        var $sortIcon,
+        var $sortIcon, $cellTitle,
             data = $grid.data(),
-            style = data.style.header,
             sortBy = data.params[data.paramNames.sortBy],
             direction = data.params[data.paramNames.direction];
 
@@ -481,9 +467,9 @@ gj.grid.methods = {
         if (sortBy) {
             position = gj.grid.methods.getColumnPosition($grid.data('columns'), sortBy);
             if (position > -1) {
-                $cell = $grid.find('thead tr th:eq(' + position + ')');
+                $cellTitle = $grid.find('thead tr th:eq(' + position + ') div[data-role="title"]');
                 $sortIcon = $('<div data-role="sorticon" class="gj-unselectable" />').append(('desc' === direction) ? data.icons.desc : data.icons.asc);
-                $cell.append($sortIcon);
+                $cellTitle.after($sortIcon);
             }
         }
     },
@@ -530,18 +516,6 @@ gj.grid.methods = {
     stopLoading: function ($grid) {
         $grid.parent().find('div[data-role="loading-cover"]').remove();
         $grid.parent().find('div[data-role="loading-text"]').remove();
-    },
-
-    createAddRowHoverHandler: function ($row, cssClass) {
-        return function () {
-            $row.addClass(cssClass);
-        };
-    },
-
-    createRemoveRowHoverHandler: function ($row, cssClass) {
-        return function () {
-            $row.removeClass(cssClass);
-        };
     },
 
     appendEmptyRow: function ($grid, caption) {
@@ -635,8 +609,6 @@ gj.grid.methods = {
             mode = 'create';
             $row = $('<tr data-role="row"/>');
             $grid.children('tbody').append($row);
-            $row.on('mouseenter', gj.grid.methods.createAddRowHoverHandler($row, data.style.content.rowHover));
-            $row.on('mouseleave', gj.grid.methods.createRemoveRowHoverHandler($row, data.style.content.rowHover));
         } else {
             mode = 'update';
             $row.removeClass(data.style.content.rowSelected).removeAttr('data-selected').off('click');
@@ -662,11 +634,10 @@ gj.grid.methods = {
         var $displayEl, key;
 
         if (!$cell || $cell.length === 0) {
-            $cell = $('<td/>').css('text-align', column.align || 'left');
+            $cell = $('<td/>');
             $displayEl = $('<div data-role="display" />');
-            if (column.cssClass) {
-                $cell.addClass(column.cssClass);
-            }
+            column.align && $cell.css('text-align', column.align);
+            column.cssClass && $cell.addClass(column.cssClass);
             $cell.append($displayEl);
             mode = 'create';
         } else {
@@ -725,9 +696,8 @@ gj.grid.methods = {
             }
         } else if ('icon' === column.type) {
             if ('create' === mode) {
-                $displayEl.append($('<span/>')
-                    .addClass($grid.data().uiLibrary === 'bootstrap' ? 'glyphicon' : 'ui-icon')
-                    .addClass(column.icon).css({ cursor: 'pointer' }));
+                $displayEl.append($('<span/>').addClass(column.icon).css({ cursor: 'pointer' }));
+                $grid.data().uiLibrary === 'bootstrap' && $displayEl.children('span').addClass('glyphicon');
                 column.stopPropagation = true;
             }
         } else if (column.tmpl) {
@@ -801,7 +771,7 @@ gj.grid.methods = {
                 $grid.find('thead input[data-role="selectAll"]').prop('checked', true);
             }
         }
-        gj.grid.events.rowSelect($grid, $row, id, $grid.getById(id));
+        return gj.grid.events.rowSelect($grid, $row, id, $grid.getById(id));
     },
 
     unselectRow: function ($grid, data, $row, id) {
@@ -816,7 +786,7 @@ gj.grid.methods = {
                 }
             }
             $row.removeAttr('data-selected');
-            gj.grid.events.rowUnselect($grid, $row, id, $grid.getById(id));
+            return gj.grid.events.rowUnselect($grid, $row, id, $grid.getById(id));
         }
     },
 
@@ -845,8 +815,11 @@ gj.grid.methods = {
     selectAll: function ($grid) {
         var data = $grid.data();
         $grid.find('tbody tr[data-role="row"]').each(function () {
-            var $row = $(this);
-            gj.grid.methods.selectRow($grid, data, $row, $grid.get($row.data('position')));
+            var $row = $(this),
+                position = $row.data('position'),
+                record = $grid.get(position),
+                id = gj.grid.methods.getId(record, data.primaryKey, position);
+            gj.grid.methods.selectRow($grid, data, $row, id);
         });
         $grid.find('thead input[data-role="selectAll"]').prop('checked', true);
         return $grid;
@@ -855,8 +828,11 @@ gj.grid.methods = {
     unSelectAll: function ($grid) {
         var data = $grid.data();
         $grid.find('tbody tr').each(function () {
-            var $row = $(this);
-            gj.grid.methods.unselectRow($grid, data, $row, $grid.get($row.data('position')));
+            var $row = $(this),
+                position = $row.data('position'),
+                record = $grid.get(position),
+                id = gj.grid.methods.getId(record, data.primaryKey, position);
+            gj.grid.methods.unselectRow($grid, data, $row, id);
             $row.find('input[type="checkbox"][data-role="selectRow"]').prop('checked', false);
         });
         $grid.find('thead input[data-role="selectAll"]').prop('checked', false);
@@ -938,7 +914,7 @@ gj.grid.methods = {
             position = id;
         }
         if (position) {
-            $result = $grid.find('tbody > tr[data-position="' + position + '"]');
+            $result = $grid.children('tbody').children('tr[data-position="' + position + '"]');
         }
         return $result;
     },
@@ -1349,6 +1325,108 @@ gj.grid.widget.prototype.getHTMLConfig = gj.grid.methods.getHTMLConfig;
     };
 })(jQuery);
 
+/** */gj.grid.plugins.fixedHeader = {
+    config: {
+        base: {
+
+            /** If set to true, add scroll to the table body             */            fixedHeader: false,
+
+            height: 300
+        }
+    },
+
+    private: {
+        init: function ($grid) {
+            var data = $grid.data(),
+                $tbody = $grid.children('tbody'),
+                $thead = $grid.children('thead'),
+                bodyHeight = data.height - $thead.outerHeight() - ($grid.children('tfoot').outerHeight() || 0);
+            $grid.addClass('gj-grid-scrollable');
+            $tbody.css('width', $thead.outerWidth());
+            $tbody.height(bodyHeight);
+        },
+
+        refresh: function ($grid) {
+            var i, width,
+                data = $grid.data(),
+                $tbody = $grid.children('tbody'),
+                $thead = $grid.children('thead'),
+                $tbodyCells = $grid.find('tbody tr[data-role="row"] td'),
+                $theadCells = $grid.find('thead tr[data-role="caption"] th');
+
+            if ($grid.children('tbody').height() < gj.grid.plugins.fixedHeader.private.getRowsHeight($grid)) {
+                $tbody.css('width', $thead.outerWidth() + gj.grid.plugins.fixedHeader.private.getScrollBarWidth() + (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 ? 1 : 0));
+            } else {
+                $tbody.css('width', $thead.outerWidth());
+            }
+
+            for (i = 0; i < $theadCells.length; i++) {
+                width = $($theadCells[i]).outerWidth();
+                if (i === 0 && gj.core.isIE()) {
+                    width = width - 1;
+                }
+                $($tbodyCells[i]).attr('width', width);
+            }
+        },
+
+        getRowsHeight: function ($grid) {
+            var total = 0;
+            $grid.find('tbody tr').each(function () {
+                total += $(this).height();
+            });
+            return total;
+        },
+
+        getScrollBarWidth: function () {
+            var inner = document.createElement('p');
+            inner.style.width = "100%";
+            inner.style.height = "200px";
+
+            var outer = document.createElement('div');
+            outer.style.position = "absolute";
+            outer.style.top = "0px";
+            outer.style.left = "0px";
+            outer.style.visibility = "hidden";
+            outer.style.width = "200px";
+            outer.style.height = "150px";
+            outer.style.overflow = "hidden";
+            outer.appendChild(inner);
+
+            document.body.appendChild(outer);
+            var w1 = inner.offsetWidth;
+            outer.style.overflow = 'scroll';
+            var w2 = inner.offsetWidth;
+            if (w1 == w2) w2 = outer.clientWidth;
+
+            document.body.removeChild(outer);
+
+            return (w1 - w2);
+        }
+    },
+
+    public: {
+    },
+
+    events: {
+    },
+
+    configure: function ($grid, fullConfig, clientConfig) {
+        $.extend(true, $grid, gj.grid.plugins.fixedHeader.public);
+        var data = $grid.data();
+        if (clientConfig.fixedHeader) {
+            $grid.on('initialized', function () {
+                gj.grid.plugins.fixedHeader.private.init($grid);
+            });
+            $grid.on('dataBound', function () {
+                gj.grid.plugins.fixedHeader.private.refresh($grid);
+            });
+            $grid.on('resize', function () {
+                gj.grid.plugins.fixedHeader.private.refresh($grid);
+            });
+        }
+    }
+};
+
 /**  */gj.grid.plugins.expandCollapseRows = {
     config: {
         base: {
@@ -1358,10 +1436,12 @@ gj.grid.widget.prototype.getHTMLConfig = gj.grid.methods.getHTMLConfig;
             /** If set try to persist the state of expanded rows.
              * You need to specify primaryKey on the initialization of the grid in order to enable this feature.             */            keepExpandedRows: true,
 
-            icons: {
-                /** Expand row icon definition.                 */                expandRow: '<i class="material-icons">keyboard_arrow_right</i>',
+            expandedRows: [],
 
-                /** Collapse row icon definition.                 */                collapseRow: '<i class="material-icons">keyboard_arrow_down</i>'
+            icons: {
+                /** Expand row icon definition.                 */                expandRow: '<i class="gj-icon chevron-right" />',
+
+                /** Collapse row icon definition.                 */                collapseRow: '<i class="gj-icon chevron-down" />'
             }
         },
 
@@ -1381,7 +1461,7 @@ gj.grid.widget.prototype.getHTMLConfig = gj.grid.methods.getHTMLConfig;
     },
 
     'private': {
-        detailExpand: function ($grid, $cell) {
+        expandDetail: function ($grid, $cell, id) {
             var $contentRow = $cell.closest('tr'),
                 $detailsRow = $('<tr data-role="details" />'),
                 $detailsCell = $('<td colspan="' + gj.grid.methods.countVisibleColumns($grid) + '" />'),
@@ -1389,23 +1469,32 @@ gj.grid.widget.prototype.getHTMLConfig = gj.grid.methods.getHTMLConfig;
                 data = $grid.data(),
                 position = $contentRow.data('position'),
                 record = $grid.get(position),
-                id = gj.grid.methods.getId(record, data.primaryKey, record);
+                plugin = gj.grid.plugins.expandCollapseRows;
 
+            if (typeof (id) === undefined) {
+                id = gj.grid.methods.getId(record, data.primaryKey, record);
+            }
             $detailsRow.append($detailsCell.append($detailsWrapper.append($contentRow.data('details'))));
             $detailsRow.insertAfter($contentRow);
             $cell.children('div[data-role="display"]').empty().append(data.icons.collapseRow);
             $grid.updateDetails($contentRow);
-            gj.grid.plugins.expandCollapseRows.events.detailExpand($grid, $detailsRow.find('td>div'), id);
+            plugin.private.keepSelection($grid, id);
+            plugin.events.detailExpand($grid, $detailsRow.find('td>div'), id);
         },
 
-        detailCollapse: function ($grid, $cell) {
+        collapseDetail: function ($grid, $cell, id) {
             var $contentRow = $cell.closest('tr'),
                 $detailsRow = $contentRow.next('tr[data-role="details"]'),
                 data = $grid.data(),
-                id = gj.grid.methods.getId($contentRow, data.primaryKey, $contentRow.data('position'));
+                plugin = gj.grid.plugins.expandCollapseRows;
+
+            if (typeof (id) === undefined) {
+                id = gj.grid.methods.getId(record, data.primaryKey, record);
+            }
             $detailsRow.remove();
             $cell.children('div[data-role="display"]').empty().append(data.icons.expandRow);
-            gj.grid.plugins.expandCollapseRows.events.detailCollapse($grid, $detailsRow.find('td>div'), id);
+            plugin.private.removeSelection($grid, id);
+            plugin.events.detailCollapse($grid, $detailsRow.find('td>div'), id);
         },
 
         keepSelection: function($grid, id) {
@@ -1413,7 +1502,7 @@ gj.grid.widget.prototype.getHTMLConfig = gj.grid.methods.getHTMLConfig;
             if (data.keepExpandedRows) {
                 if ($.isArray(data.expandedRows)) {
                     if (data.expandedRows.indexOf(id) == -1) {
-                        data.expandedRows.push(id)
+                        data.expandedRows.push(id);
                     }
                 } else {
                     data.expandedRows = [id];
@@ -1437,22 +1526,44 @@ gj.grid.widget.prototype.getHTMLConfig = gj.grid.methods.getHTMLConfig;
     },
 
     'public': {
-        //TODO: add documentation
-        collapseAll: function () {
-            var $grid = this,
+
+        /**
+         * Collapse all grid rows.         */        collapseAll: function () {
+            var $grid = this, data = $grid.data(), position;
+                
+
+            if (typeof (data.detailTemplate) !== 'undefined') {
                 position = gj.grid.methods.getColumnPositionByRole($grid, 'expander');
-            $grid.find('tbody tr[data-role="row"]').each(function () {
-                gj.grid.plugins.expandCollapseRows.private.detailCollapse($grid, $(this).find('td:eq(' + position + ')'));
-            });
+                $grid.find('tbody tr[data-role="row"]').each(function () {
+                    gj.grid.plugins.expandCollapseRows.private.collapseDetail($grid, $(this).find('td:eq(' + position + ')'));
+                });
+            }
+
+            if (typeof (data.grouping) !== 'undefined') {
+                $grid.find('tbody tr[role="group"]').each(function () {
+                    gj.grid.plugins.grouping.private.collapseGroup(data, $(this).find('td:eq(0)'));
+                });
+            }
+            return $grid;
         },
 
-        //TODO: add documentation
-        expandAll: function () {
-            var $grid = this,
+        /**
+         * Expand all grid rows.         */        expandAll: function () {
+            var $grid = this, data = $grid.data(), position;
+
+            if (typeof (data.detailTemplate) !== 'undefined') {
                 position = gj.grid.methods.getColumnPositionByRole($grid, 'expander');
-            $grid.find('tbody tr[data-role="row"]').each(function () {
-                gj.grid.plugins.expandCollapseRows.private.detailExpand($grid, $(this).find('td:eq(' + position + ')'));
-            });
+                $grid.find('tbody tr[data-role="row"]').each(function () {
+                    gj.grid.plugins.expandCollapseRows.private.expandDetail($grid, $(this).find('td:eq(' + position + ')'));
+                });
+            }
+
+            if (typeof (data.grouping) !== 'undefined') {
+                $grid.find('tbody tr[role="group"]').each(function () {
+                    gj.grid.plugins.grouping.private.expandGroup(data, $(this).find('td:eq(0)'));
+                });
+            }
+            return $grid;
         },
 
         //TODO: add documentation
@@ -1469,6 +1580,7 @@ gj.grid.widget.prototype.getHTMLConfig = gj.grid.methods.getHTMLConfig;
                 });
                 $detailWrapper.html(content);
             }
+            return $grid;
         }
     },
 
@@ -1494,7 +1606,6 @@ gj.grid.widget.prototype.getHTMLConfig = gj.grid.methods.getHTMLConfig;
         if (typeof (data.detailTemplate) !== 'undefined') {
             column = {
                 title: '',
-                field: data.primaryKey,
                 width: data.defaultIconColumnWidth,
                 align: 'center',
                 stopPropagation: true,
@@ -1505,11 +1616,9 @@ gj.grid.widget.prototype.getHTMLConfig = gj.grid.methods.getHTMLConfig;
                     'click': function (e) {
                         var $cell = $(this), methods = gj.grid.plugins.expandCollapseRows.private;
                         if ($cell.closest('tr').next().attr('data-role') === 'details') {
-                            methods.detailCollapse($grid, $cell);
-                            methods.removeSelection($grid, e.data.id);
+                            methods.collapseDetail($grid, $cell, e.data.id);
                         } else {
-                            methods.detailExpand($grid, $(this));
-                            methods.keepSelection($grid, e.data.id);
+                            methods.expandDetail($grid, $(this), e.data.id);
                         }
                     }
                 }
@@ -1526,7 +1635,7 @@ gj.grid.widget.prototype.getHTMLConfig = gj.grid.methods.getHTMLConfig;
                 gj.grid.plugins.expandCollapseRows.private.updateDetailsColSpan($grid);
             });
             $grid.on('rowRemoving', function (e, $row, id, record) {
-                gj.grid.plugins.expandCollapseRows.private.detailCollapse($grid, $row.children('td').first());
+                gj.grid.plugins.expandCollapseRows.private.collapseDetail($grid, $row.children('td').first(), id);
             });
             $grid.on('dataBinding', function () {
                 $grid.collapseAll();
@@ -1543,7 +1652,7 @@ gj.grid.widget.prototype.getHTMLConfig = gj.grid.methods.getHTMLConfig;
                             position = gj.grid.methods.getColumnPositionByRole($grid, 'expander');
                             $cell = $row.children('td:eq(' + position + ')');
                             if ($cell && $cell.length) {
-                                gj.grid.plugins.expandCollapseRows.private.detailExpand($grid, $cell);
+                                gj.grid.plugins.expandCollapseRows.private.expandDetail($grid, $cell);
                             }
                         }
                     }
@@ -1556,33 +1665,21 @@ gj.grid.widget.prototype.getHTMLConfig = gj.grid.methods.getHTMLConfig;
     renderers: {
         editManager: function (value, record, $cell, $displayEl, id, $grid) {
             var data = $grid.data(),
-                $edit = $(data.inlineEditing.editButton).attr('data-key', id),
-                $delete = $(data.inlineEditing.deleteButton).attr('data-key', id),
-                $update = $(data.inlineEditing.updateButton).attr('data-key', id).hide(),
-                $cancel = $(data.inlineEditing.cancelButton).attr('data-key', id).hide();
+                $edit = $(data.inlineEditing.editButton).attr('key', id),
+                $delete = $(data.inlineEditing.deleteButton).attr('key', id),
+                $update = $(data.inlineEditing.updateButton).attr('key', id).hide(),
+                $cancel = $(data.inlineEditing.cancelButton).attr('key', id).hide();
             $edit.on('click', function (e) {
-                $grid.edit($(this).data('key'));
-                $edit.hide();
-                $delete.hide();
-                $update.show();
-                $cancel.show();
+                $grid.edit($(this).attr('key'));
             });
             $delete.on('click', function (e) {
-                $grid.removeRow($(this).data('key'));
+                $grid.removeRow($(this).attr('key'));
             });
             $update.on('click', function (e) {
-                $grid.update($(this).data('key'));
-                $edit.show();
-                $delete.show();
-                $update.hide();
-                $cancel.hide();
+                $grid.update($(this).attr('key'));
             });
             $cancel.on('click', function (e) {
-                $grid.cancel($(this).data('key'));
-                $edit.show();
-                $delete.show();
-                $update.hide();
-                $cancel.hide();
+                $grid.cancel($(this).attr('key'));
             });
             $displayEl.empty().append($edit).append($delete).append($update).append($cancel);
         }
@@ -1592,7 +1689,9 @@ gj.grid.widget.prototype.getHTMLConfig = gj.grid.methods.getHTMLConfig;
 gj.grid.plugins.inlineEditing.config = {
     base: {
         defaultColumnSettings: {
-            /** Provides a way to specify a custom editing UI for the column.             */            editor: undefined,
+            /** Provides a way to set an editing UI for the column.             */            editor: undefined,
+
+            /** The name of the field in the grid data where the grid is going to set the new value.             */            editField: undefined,
 
             /** Provides a way to specify a display mode for the column.             */            mode: 'readEdit'
         },
@@ -1602,97 +1701,117 @@ gj.grid.plugins.inlineEditing.config = {
                 
             /** If set to true, add column with buttons for edit, delete, update and cancel at the end of the grid.            */            managementColumn: true,
 
-            managementColumnConfig: { width: 300, align: 'center', renderer: gj.grid.plugins.inlineEditing.renderers.editManager, cssClass: 'gj-grid-management-column' }
+            managementColumnConfig: { width: 300, role: 'managementColumn', align: 'center', renderer: gj.grid.plugins.inlineEditing.renderers.editManager, cssClass: 'gj-grid-management-column' }
         }
     },
 
     bootstrap: {
         inlineEditing: {
-            managementColumnConfig: { width: 200, align: 'center', renderer: gj.grid.plugins.inlineEditing.renderers.editManager, cssClass: 'gj-grid-management-column' }
+            managementColumnConfig: { width: 200, role: 'managementColumn', align: 'center', renderer: gj.grid.plugins.inlineEditing.renderers.editManager, cssClass: 'gj-grid-management-column' }
         }
     },
 
     bootstrap4: {
         inlineEditing: {
-            managementColumnConfig: { width: 200, align: 'center', renderer: gj.grid.plugins.inlineEditing.renderers.editManager, cssClass: 'gj-grid-management-column' }
+            managementColumnConfig: { width: 280, role: 'managementColumn', align: 'center', renderer: gj.grid.plugins.inlineEditing.renderers.editManager, cssClass: 'gj-grid-management-column' }
         }
     }
 };
 
 gj.grid.plugins.inlineEditing.private = {
     localization: function (data) {
-        if (data.uiLibrary === 'bootstrap' || data.uiLibrary === 'bootstrap4') {
-            data.inlineEditing.editButton = '<button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> ' + gj.grid.messages[data.locale].Edit + '</button>';
-            data.inlineEditing.deleteButton = '<button type="button" class="btn btn-default btn-sm gj-margin-left-10"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> ' + gj.grid.messages[data.locale].Delete + '</button>';
-            data.inlineEditing.updateButton = '<button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> ' + gj.grid.messages[data.locale].Update + '</button>';
-            data.inlineEditing.cancelButton = '<button type="button" class="btn btn-default btn-sm gj-margin-left-10"><span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span> ' + gj.grid.messages[data.locale].Cancel + '</button>';
+        if (data.uiLibrary === 'bootstrap') {
+            data.inlineEditing.editButton = '<button role="edit" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> ' + gj.grid.messages[data.locale].Edit + '</button>';
+            data.inlineEditing.deleteButton = '<button role="delete" class="btn btn-default btn-sm gj-margin-left-10"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> ' + gj.grid.messages[data.locale].Delete + '</button>';
+            data.inlineEditing.updateButton = '<button role="update" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> ' + gj.grid.messages[data.locale].Update + '</button>';
+            data.inlineEditing.cancelButton = '<button role="cancel" class="btn btn-default btn-sm gj-margin-left-10"><span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span> ' + gj.grid.messages[data.locale].Cancel + '</button>';
         } else {
-            data.inlineEditing.editButton = '<button class="gj-button-md"><i class="material-icons">mode_edit</i> ' + gj.grid.messages[data.locale].Edit.toUpperCase() + '</button>';
-            data.inlineEditing.deleteButton = '<button class="gj-button-md"><i class="material-icons">delete</i> ' + gj.grid.messages[data.locale].Delete.toUpperCase() + '</button>';
-            data.inlineEditing.updateButton = '<button class="gj-button-md"><i class="material-icons">check_circle</i> ' + gj.grid.messages[data.locale].Update.toUpperCase() + '</button>';
-            data.inlineEditing.cancelButton = '<button class="gj-button-md"><i class="material-icons">cancel</i> ' +gj.grid.messages[data.locale].Cancel.toUpperCase() + '</button>';
+            data.inlineEditing.editButton = '<button role="edit" class="gj-button-md"><i class="gj-icon pencil" /> ' + gj.grid.messages[data.locale].Edit.toUpperCase() + '</button>';
+            data.inlineEditing.deleteButton = '<button role="delete" class="gj-button-md"><i class="gj-icon delete" /> ' + gj.grid.messages[data.locale].Delete.toUpperCase() + '</button>';
+            data.inlineEditing.updateButton = '<button role="update" class="gj-button-md"><i class="gj-icon check-circle" /> ' + gj.grid.messages[data.locale].Update.toUpperCase() + '</button>';
+            data.inlineEditing.cancelButton = '<button role="cancel" class="gj-button-md"><i class="gj-icon cancel" /> ' +gj.grid.messages[data.locale].Cancel.toUpperCase() + '</button>';
         }
     },
 
     editMode: function ($grid, $cell, column, record) {
         var $displayContainer, $editorContainer, $editorField, value, config, data = $grid.data();
-        if ($cell.attr('data-mode') !== 'edit' && column.editor) {
-            gj.grid.plugins.inlineEditing.private.updateOtherCells($grid, column.mode);
-            $displayContainer = $cell.find('div[data-role="display"]').hide();
-            $editorContainer = $cell.find('div[data-role="edit"]').show();
-            if ($editorContainer.length === 0) {
-                $editorContainer = $('<div data-role="edit" />');
-                $cell.append($editorContainer);
-            }
-            value = column.type === 'checkbox' ? record[column.field] : $displayContainer.html();
-            $editorField = $editorContainer.find('input, select, textarea').first();
-            if ($editorField.length) {
-                column.type === 'checkbox' ? $editorField.prop('checked', value) : $editorField.val(value);
-            } else {
-                if (typeof (column.editor) === 'function') {
-                    column.editor($editorContainer, value, record);
+        if ($cell.attr('data-mode') !== 'edit') {
+            if (column.editor) {
+                gj.grid.plugins.inlineEditing.private.updateOtherCells($grid, column.mode);
+                $displayContainer = $cell.find('div[data-role="display"]').hide();
+                $editorContainer = $cell.find('div[data-role="edit"]').show();
+                if ($editorContainer.length === 0) {
+                    $editorContainer = $('<div data-role="edit" />');
+                    $cell.append($editorContainer);
+                }
+                value = record[column.editField || column.field];
+                $editorField = $editorContainer.find('input, select, textarea').first();
+                if ($editorField.length) {
+                    column.type === 'checkbox' ? $editorField.prop('checked', value) : $editorField.val(value);
                 } else {
-                    if ('checkbox' === column.type) {
-                        $editorField = $('<input type="checkbox" />').prop('checked', value);
-                        $editorContainer.append($editorField);
-                        $editorField.checkbox({ uiLibrary: data.uiLibrary });
-                    } else if ('date' === column.type) {
-                        $editorField = $('<input type="text" width="100%"/>');
-                        $editorContainer.append($editorField);
-                        config = typeof column.editor === "object" ? column.editor : {};
-                        config.uiLibrary = data.uiLibrary;
-                        config.fontSize = $grid.css('font-size');
-                        $editorField.datepicker(config).value($displayContainer.html());
-                    } else if ('dropdown' === column.type) {
-                        $editorField = $('<select type="text" width="100%"/>');
-                        $editorContainer.append($editorField);
-                        config = typeof column.editor === "object" ? column.editor : {};
-                        config.uiLibrary = data.uiLibrary;
-                        config.fontSize = $grid.css('font-size');
-                        $editorField.dropdown(config).value($displayContainer.html());
+                    if (typeof (column.editor) === 'function') {
+                        column.editor($editorContainer, value, record);
+                        $editorField = $editorContainer.find('input, select, textarea').first();
                     } else {
-                        $editorField = $('<input type="text" value="' + value + '" class="gj-width-full"/>');
-                        if (data.uiLibrary === 'materialdesign') {
-                            $editorField.addClass('gj-textbox-md').css('font-size', $grid.css('font-size'));
+                        config = typeof column.editor === "object" ? column.editor : {};
+                        config.uiLibrary = data.uiLibrary;
+                        config.iconsLibrary = data.iconsLibrary;
+                        config.fontSize = $grid.css('font-size');
+                        if ('checkbox' === column.type && gj.checkbox) {
+                            $editorField = $('<input type="checkbox" />').prop('checked', value);
+                            $editorContainer.append($editorField);
+                            $editorField.checkbox(config);
+                        } else if ('date' === column.type && gj.datepicker) {
+                            $editorField = $('<input type="text" width="100%"/>');
+                            $editorContainer.append($editorField);
+                            if (column.format) {
+                                config.format = column.format;
+                            }
+                            $editorField = $editorField.datepicker(config);
+                            if ($editorField.value) {
+                                $editorField.value($displayContainer.html());
+                            }
+                        } else if ('dropdown' === column.type && gj.dropdown) {
+                            $editorField = $('<select type="text" width="100%"/>');
+                            $editorContainer.append($editorField);
+                            config.dataBound = function (e) {
+                                var $dropdown = $(this).dropdown();
+                                if (column.editField) {
+                                    $dropdown.value(record[column.editField]);
+                                } else {
+                                    $dropdown.value(record[column.field]);
+                                }
+                            };
+                            $editorField = $editorField.dropdown(config);
+                        } else {
+                            $editorField = $('<input type="text" value="' + value + '" class="gj-width-full"/>');
+                            if (data.uiLibrary === 'materialdesign') {
+                                $editorField.addClass('gj-textbox-md').css('font-size', $grid.css('font-size'));
+                            }
+                            $editorContainer.append($editorField);
                         }
-                        $editorContainer.append($editorField);
+                    }
+                    if (data.inlineEditing.mode !== 'command' && column.mode !== 'editOnly') {
+                        $editorField = $editorContainer.find('input, select, textarea').first();
+                        $editorField.on('keyup', function (e) {
+                            if (e.keyCode === 13 || e.keyCode === 27) {
+                                gj.grid.plugins.inlineEditing.private.displayMode($grid, $cell, column);
+                            }
+                        });
                     }
                 }
-                $editorField = $editorContainer.find('input, select, textarea').first();
-                if (data.inlineEditing.mode !== 'command' && column.mode !== 'editOnly') {
-                    $editorField.on('keyup', function (e) {
-                        if (e.keyCode === 13 || e.keyCode === 27) {
-                            gj.grid.plugins.inlineEditing.private.displayMode($grid, $cell, column);
-                        }
-                    });
+                if ($editorField.prop('tagName').toUpperCase() === "INPUT" && $editorField.prop('type').toUpperCase() === 'TEXT') {
+                    gj.grid.plugins.inlineEditing.private.setCaretAtEnd($editorField[0]);
+                } else {
+                    $editorField.focus();
                 }
+                $cell.attr('data-mode', 'edit');
+            } else if (column.role === 'managementColumn') {
+                $cell.find('[role="edit"]').hide();
+                $cell.find('[role="delete"]').hide();
+                $cell.find('[role="update"]').show();
+                $cell.find('[role="cancel"]').show();
             }
-            if ($editorField.prop('tagName').toUpperCase() === "INPUT" && $editorField.prop('type').toUpperCase() === 'TEXT') {
-                gj.grid.plugins.inlineEditing.private.setCaretAtEnd($editorField[0]);
-            } else {
-                $editorField.focus();
-            }
-            $cell.attr('data-mode', 'edit');
         }
     },
 
@@ -1716,29 +1835,46 @@ gj.grid.plugins.inlineEditing.private = {
     },
 
     displayMode: function ($grid, $cell, column, cancel) {
-        var $editorContainer, $displayContainer, $ele, newValue, oldValue, record, position, style = '';
-        if ($cell.attr('data-mode') === 'edit' && column.mode !== 'editOnly') {
-            $editorContainer = $cell.find('div[data-role="edit"]');
-            $displayContainer = $cell.find('div[data-role="display"]');
-            $ele = $editorContainer.find('input, select, textarea').first();
-            newValue = column.type === 'checkbox' ? $ele.prop('checked') : $ele.val();
-            position = $cell.parent().data('position');
-            record = $grid.get(position);
-            oldValue = column.type === 'checkbox' ? record[column.field] : $displayContainer.html();
-            if (cancel !== true && newValue !== oldValue) {
-                record[column.field] = column.type === 'date' ? gj.core.parseDate(newValue, column.format) : newValue;
-                if (column.mode !== 'editOnly') {
-                    gj.grid.methods.renderDisplayElement($grid, $displayContainer, column, record, gj.grid.methods.getId(record, $grid.data('primaryKey'), position), 'update');
-                    if ($cell.find('span.gj-dirty').length === 0) {
-                        $cell.prepend($('<span class="gj-dirty" />'));
-                    }
+        var $editorContainer, $displayContainer, $ele, newValue, newEditFieldValue, record, position, style = '';
+        if (column.mode !== 'editOnly') {
+            if ($cell.attr('data-mode') === 'edit') {
+                $editorContainer = $cell.find('div[data-role="edit"]');
+                $displayContainer = $cell.find('div[data-role="display"]');
+                $ele = $editorContainer.find('input, select, textarea').first();
+                if ($ele[0].tagName.toUpperCase() === "SELECT" && $ele[0].selectedIndex > -1) {
+                    newValue = $ele[0].options[$ele[0].selectedIndex].innerHTML;
+                    newEditFieldValue = $ele[0].value;
+                } else if ($ele[0].tagName.toUpperCase() === "INPUT" && $ele[0].type.toUpperCase() === "CHECKBOX") {
+                    newValue = $ele[0].checked;
+                } else {
+                    newValue = $ele.val();
                 }
-                gj.grid.plugins.inlineEditing.events.cellDataChanged($grid, $cell, column, record, oldValue, newValue);
-                gj.grid.plugins.inlineEditing.private.updateChanges($grid, column, record, newValue);
+                position = $cell.parent().data('position');
+                record = $grid.get(position);
+                if (cancel !== true && newValue !== record[column.field]) {
+                    record[column.field] = column.type === 'date' ? gj.core.parseDate(newValue, column.format) : newValue;
+                    if (column.editField) {
+                        record[column.editField] = newEditFieldValue || newValue;
+                    }
+                    if (column.mode !== 'editOnly') {
+                        gj.grid.methods.renderDisplayElement($grid, $displayContainer, column, record, gj.grid.methods.getId(record, $grid.data('primaryKey'), position), 'update');
+                        if ($cell.find('span.gj-dirty').length === 0) {
+                            $cell.prepend($('<span class="gj-dirty" />'));
+                        }
+                    }
+                    gj.grid.plugins.inlineEditing.events.cellDataChanged($grid, $cell, column, record, newValue);
+                    gj.grid.plugins.inlineEditing.private.updateChanges($grid, column, record, newValue);
+                }
+                $editorContainer.hide();
+                $displayContainer.show();
+                $cell.attr('data-mode', 'display');
             }
-            $editorContainer.hide();
-            $displayContainer.show();
-            $cell.attr('data-mode', 'display');
+            if (column.role === 'managementColumn') {
+                $cell.find('[role="update"]').hide();
+                $cell.find('[role="cancel"]').hide();
+                $cell.find('[role="edit"]').show();
+                $cell.find('[role="delete"]').show();
+            }
         }
     },
 
@@ -1800,7 +1936,7 @@ gj.grid.plugins.inlineEditing.public = {
     /**
      * Enable edit mode for all editable cells within a row.     */    edit: function (id) {
         var i, record = this.getById(id),
-            $cells = gj.grid.methods.getRowById(this, id).find('td'),
+            $cells = gj.grid.methods.getRowById(this, id).children('td'),
             columns = this.data('columns');
 
         for (i = 0; i < $cells.length; i++) {
@@ -1813,7 +1949,7 @@ gj.grid.plugins.inlineEditing.public = {
     /**
      * Update all editable cells within a row, when the row is in edit mode.     */    update: function (id) {
         var i, record = this.getById(id),
-            $cells = gj.grid.methods.getRowById(this, id).find('td'),
+            $cells = gj.grid.methods.getRowById(this, id).children('td'),
             columns = this.data('columns');
 
         for (i = 0; i < $cells.length; i++) {
@@ -1828,7 +1964,7 @@ gj.grid.plugins.inlineEditing.public = {
     /**
      * Cancel the edition of all editable cells, when the row is in edit mode.     */    cancel: function (id) {
         var i, record = this.getById(id),
-            $cells = gj.grid.methods.getRowById(this, id).find('td'),
+            $cells = gj.grid.methods.getRowById(this, id).children('td'),
             columns = this.data('columns');
 
         for (i = 0; i < $cells.length; i++) {
@@ -1859,6 +1995,9 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
     if (clientConfig.inlineEditing) {
         $grid.on('dataBound', function () {
             $grid.find('span.gj-dirty').remove();
+        });
+        $grid.on('rowDataBound', function (e, $row, id, record) {
+            $grid.cancel(id);
         });
     }
     if (data.inlineEditing.mode === 'command') {
@@ -1950,7 +2089,7 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
         base: {
             style: {
                 pager: {
-                    cell: '',
+                    panel: '',
                     stateDisabled: '',
                     activeButton: ''
                 }
@@ -1979,7 +2118,7 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
         bootstrap: {
             style: {
                 pager: {
-                    cell: 'gj-grid-bootstrap-tfoot-cell',
+                    panel: '',
                     stateDisabled: ''
                 }
             }
@@ -1988,7 +2127,7 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
         bootstrap4: {
             style: {
                 pager: {
-                    cell: 'gj-grid-bootstrap-tfoot-cell',
+                    panel: 'btn-toolbar',
                     stateDisabled: ''
                 }
             }
@@ -2006,11 +2145,11 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
 
         materialicons: {
             icons: {
-                first: '<i class="material-icons">first_page</i>',
-                previous: '<i class="material-icons">chevron_left</i>',
-                next: '<i class="material-icons">chevron_right</i>',
-                last: '<i class="material-icons">last_page</i>',
-                refresh: '<i class="material-icons">refresh</i>'
+                first: '<i class="gj-icon first-page" />',
+                previous: '<i class="gj-icon chevron-left" />',
+                next: '<i class="gj-icon chevron-right" />',
+                last: '<i class="gj-icon last-page" />',
+                refresh: '<i class="gj-icon refresh" />'
             }
         },
 
@@ -2042,14 +2181,11 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
                 gj.grid.plugins.pagination.private.localization(data);
 
                 $row = $('<tr data-role="pager"/>');
-                $cell = $('<th/>').addClass(data.style.pager.cell);
+                $cell = $('<th/>');
                 $row.append($cell);
 
-                $leftPanel = $('<div data-role="display" />').css({ 'float': 'left' });
-                $rightPanel = $('<div data-role="display" />').css({ 'float': 'right' });
-                if (/msie/.test(navigator.userAgent.toLowerCase())) {
-                    $rightPanel.css({ 'padding-top': '3px' });
-                }
+                $leftPanel = $('<div data-role="display" />').addClass(data.style.pager.panel).css({ 'float': 'left' });
+                $rightPanel = $('<div data-role="display" />').addClass(data.style.pager.panel).css({ 'float': 'right' });
 
                 $cell.append($leftPanel).append($rightPanel);
 
@@ -2119,7 +2255,7 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
                     $('<button class="btn btn-default btn-sm gj-cursor-pointer">' + (data.icons.first || msg.First) + '</button>').attr('title', msg.FirstPageTooltip).attr('data-role', 'page-first'),
                     $('<button class="btn btn-default btn-sm gj-cursor-pointer">' + (data.icons.previous || msg.Previous) + '</button>').attr('title', msg.PreviousPageTooltip).attr('data-role', 'page-previous'),
                     $('<div>' + msg.Page + '</div>'),
-                    $('<input data-role="page-number" class="form-control form-control-sm" type="text" value="0">'),
+                    $('<div class="input-group"><input data-role="page-number" class="form-control form-control-sm" type="text" value="0"></div>'),
                     $('<div>' + msg.Of + '</div>'),
                     $('<div data-role="page-label-last">0</div>'),
                     $('<button class="btn btn-default btn-sm gj-cursor-pointer">' + (data.icons.next || msg.Next) + '</button>').attr('title', msg.NextPageTooltip).attr('data-role', 'page-next'),
@@ -2179,10 +2315,11 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
                             gj.grid.plugins.pagination.events.pageSizeChange($grid, newSize);
                         });
                         $control.val(data.params[data.paramNames.limit]);
-                        if ($.fn.dropdown) {
+                        if (gj.dropdown) {
                             $control.dropdown({
                                 uiLibrary: data.uiLibrary,
                                 iconsLibrary: data.iconsLibrary,
+                                fontSize: $control.css('font-size'),
                                 style: {
                                     presenter: 'btn btn-default btn-sm'
                                 }
@@ -2230,7 +2367,7 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
                     gj.grid.plugins.pagination.private.assignPageHandler($grid, $control, page - 1, page < 2);
                     break;
                 case 'page-number':
-                    $control.val(page).off('change').on('change', gj.grid.plugins.pagination.private.createChangePageHandler($grid, page, lastPage));
+                    $control.val(page).off('change').on('change', gj.grid.plugins.pagination.private.createChangePageHandler($grid, page));
                     break;
                 case 'page-label-last':
                     $control.text(lastPage);
@@ -2292,24 +2429,20 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
             }
         },
 
-        createChangePageHandler: function ($grid, currentPage, lastPage) {
+        createChangePageHandler: function ($grid, currentPage) {
             return function () {
                 var data = $grid.data(),
                     newPage = parseInt(this.value, 10);
-                if (newPage && !isNaN(newPage) && newPage <= lastPage) {
-                    gj.grid.plugins.pagination.private.changePage($grid, newPage);
-                } else {
-                    this.value = currentPage;
-                    alert('Please enter a valid number.');
-                }
+                gj.grid.plugins.pagination.private.changePage($grid, newPage);
             };
         },
 
         changePage: function ($grid, newPage) {
             var data = $grid.data();
-            $grid.find('TFOOT [data-role="page-number"]').val(newPage);
-            data.params[data.paramNames.page] = newPage;
-            gj.grid.plugins.pagination.events.pageChanging($grid, newPage);
+            if (gj.grid.plugins.pagination.events.pageChanging($grid, newPage) !== false && !isNaN(newPage)) {
+                $grid.find('TFOOT [data-role="page-number"]').val(newPage);
+                data.params[data.paramNames.page] = newPage;
+            }
             $grid.reload();
         },
 
@@ -2336,11 +2469,17 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
     public: {
         getAll: function (includeAllRecords) {
             var limit, page, start, data = this.data();
-            if (!includeAllRecords && $.isArray(data.dataSource) && data.params[data.paramNames.limit] && data.params[data.paramNames.page]) {
-                limit = parseInt(data.params[data.paramNames.limit], 10);
-                page = parseInt(data.params[data.paramNames.page], 10);
-                start = (page - 1) * limit;
-                return data.records.slice(start, start + limit);
+            if ($.isArray(data.dataSource)) {
+                if (includeAllRecords) {
+                    return data.dataSource;
+                } else if (data.params[data.paramNames.limit] && data.params[data.paramNames.page]) {                    
+                    limit = parseInt(data.params[data.paramNames.limit], 10);
+                    page = parseInt(data.params[data.paramNames.page], 10);
+                    start = (page - 1) * limit;
+                    return data.records.slice(start, start + limit);
+                } else {
+                    return data.records;
+                }
             } else {
                 return data.records;
             }
@@ -2512,6 +2651,8 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
                     this.hideColumn(columns[i].field);
                 }
             }
+
+            return this;
         },
     },
 
@@ -2638,6 +2779,9 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
         $grid.on('initialized', function () {
             gj.grid.plugins.toolbar.private.init($grid);
         });
+        $grid.on('destroying', function () {
+            $grid.prev('[data-role="toolbar"]').remove();
+        });
     }
 };
 
@@ -2658,37 +2802,57 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
                     $wrapper = $('<div class="gj-grid-column-resizer-wrapper" />');
                     marginRight = parseInt($column.css('padding-right'), 10) + 3;
                     $resizer = $('<span class="gj-grid-column-resizer" />').css('margin-right', '-' + marginRight + 'px');
-                    if ($.fn.draggable) {
-                        $resizer.draggable({
-                            start: function () {
-                                $grid.addClass('gj-unselectable');
-                                $grid.addClass('gj-grid-resize-cursor');
-                            },
-                            stop: function () {
-                                $grid.removeClass('gj-unselectable');
-                                $grid.removeClass('gj-grid-resize-cursor');
-                                this.style.removeProperty('top');
-                                this.style.removeProperty('left');
-                                this.style.removeProperty('position');
-                            },
-                            drag: gj.grid.plugins.resizableColumns.private.createResizeHandle($grid, $column, config.columns[i])
-                        });
-                    }
+                    $resizer.draggable({
+                        start: function () {
+                            $grid.addClass('gj-unselectable');
+                            $grid.addClass('gj-grid-resize-cursor');
+                        },
+                        stop: function () {
+                            $grid.removeClass('gj-unselectable');
+                            $grid.removeClass('gj-grid-resize-cursor');
+                            this.style.removeProperty('top');
+                            this.style.removeProperty('left');
+                            this.style.removeProperty('position');
+                        },
+                        drag: gj.grid.plugins.resizableColumns.private.createResizeHandle($grid, $column, config.columns[i])
+                    });
                     $column.append($wrapper.append($resizer));
+                }
+                for (i = 0; i < $columns.length; i++) {
+                    $column = $($columns[i]);
+                    if (!$column.attr('width')) {
+                        $column.attr('width', $column.outerWidth());
+                    }
                 }
             }
         },
 
         createResizeHandle: function ($grid, $column, column) {
-            return function (e, offset) {
-                var newWidth, currentWidth = parseInt($column.attr('width'), 10);
+            var data = $grid.data();
+            return function (e, newPosition) {
+                var i, index, rows, cell, newWidth, nextWidth,
+                    currentWidth = parseInt($column.attr('width'), 10),
+                    position = gj.core.position(this),
+                    offset = { top: newPosition.top - position.top, left: newPosition.left - position.left };
                 if (!currentWidth) {
                     currentWidth = $column.outerWidth();
                 }
-                if (offset && offset.left) {
+                if (offset.left) {
                     newWidth = currentWidth + offset.left;
                     column.width = newWidth;
                     $column.attr('width', newWidth);
+                    index = $column[0].cellIndex;
+                    cell = $column[0].parentElement.children[index + 1];
+                    nextWidth = parseInt($(cell).attr('width'), 10) - offset.left;
+                    cell.setAttribute('width', nextWidth);
+                    if (data.resizableColumns) {
+                        rows = $grid[0].tBodies[0].children;
+                        for (i = 0; i < rows.length; i++) {
+                            rows[i].cells[index].setAttribute('width', newWidth);
+                            cell = rows[i].cells[index + 1];
+                            cell.setAttribute('width', nextWidth);
+                        }
+                    }
                 }
             };
         }
@@ -2699,7 +2863,7 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
 
     configure: function ($grid, fullConfig, clientConfig) {
         $.extend(true, $grid, gj.grid.plugins.resizableColumns.public);
-        if (fullConfig.resizableColumns) {
+        if (fullConfig.resizableColumns && gj.draggable) {
             $grid.on('initialized', function () {
                 gj.grid.plugins.resizableColumns.private.init($grid, fullConfig);
             });
@@ -2743,7 +2907,10 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
 
         createRowMouseDownHandler: function ($grid, $trSource) {
             return function (e) {
-                var $dragEl = $grid.clone(), columns = $grid.data('columns'), i, $cells;
+                var $dragEl = $grid.clone(),
+                    columns = $grid.data('columns'),
+                    i, $cells;
+                $grid.addClass('gj-unselectable');
                 $('body').append($dragEl);
                 $dragEl.attr('data-role', 'draggable-clone').css('cursor', 'move');
                 $dragEl.children('thead').remove().children('tfoot').remove();
@@ -2758,7 +2925,7 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
                     stop: gj.grid.plugins.rowReorder.private.createDragStopHandler($grid, $trSource)
                 });
                 $dragEl.css({ 
-                    position: 'absolute', top: $trSource.offset().top, left: $trSource.offset().left, width: $trSource.width()
+                    position: 'absolute', top: $trSource.offset().top, left: $trSource.offset().left, width: $trSource.width(), zIndex: 1
                 });
                 if ($trSource.attr('data-droppable') === 'true') {
                     $trSource.droppable('destroy');
@@ -2780,6 +2947,7 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
         createDragStopHandler: function ($grid, $trSource) {
             return function (e, mousePosition) {
                 $('table[data-role="draggable-clone"]').draggable('destroy').remove();
+                $grid.removeClass('gj-unselectable');
                 $trSource.siblings('tr[data-role="row"]').each(function () {
                     var $trTarget = $(this),
                         targetPosition = $trTarget.data('position'),
@@ -2810,8 +2978,8 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
                             }
                         }
                     }
-                    $trTarget.removeClass('gj-grid-base-top-border');
-                    $trTarget.removeClass('gj-grid-base-bottom-border');
+                    $trTarget.removeClass('gj-grid-top-border');
+                    $trTarget.removeClass('gj-grid-bottom-border');
                     $trTarget.droppable('destroy');
                 });
             }
@@ -2823,16 +2991,16 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
                     targetPosition = $trTarget.data('position'),
                     sourcePosition = $trSource.data('position');
                 if (targetPosition < sourcePosition) {
-                    $trTarget.addClass('gj-grid-base-top-border');
+                    $trTarget.addClass('gj-grid-top-border');
                 } else {
-                    $trTarget.addClass('gj-grid-base-bottom-border');
+                    $trTarget.addClass('gj-grid-bottom-border');
                 }
             };
         },
 
         droppableOut: function () {
-            $(this).removeClass('gj-grid-base-top-border');
-            $(this).removeClass('gj-grid-base-bottom-border');
+            $(this).removeClass('gj-grid-top-border');
+            $(this).removeClass('gj-grid-bottom-border');
         }
     },
 
@@ -2841,7 +3009,7 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
 
     configure: function ($grid, fullConfig, clientConfig) {
         $.extend(true, $grid, gj.grid.plugins.rowReorder.public);
-        if (fullConfig.rowReorder && $.fn.draggable && $.fn.droppable) {
+        if (fullConfig.rowReorder && gj.draggable && gj.droppable) {
             $grid.on('dataBound', function () {
                 gj.grid.plugins.rowReorder.private.init($grid);
             });
@@ -2849,10 +3017,63 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
     }
 };
 
+/**  */gj.grid.plugins.export = {
+    config: { base: {} },
+
+    public: {
+        /**
+         * Get grid data in Comma Separated Values (CSV) format.         */        getCSV: function (includeAllRecords) {
+            var i, j, line = '', str = '',
+                columns = this.data().columns,
+                records = this.getAll(includeAllRecords);
+
+            if (records.length) {
+
+                for (i = 0; i < columns.length; i++) {
+                    if (columns[i].hidden !== true) {
+                        line += '"' + (columns[i].title || columns[i].field) + '",';
+                    }
+                }
+                str += line.slice(0, line.length - 1) + '\r\n';
+
+                for (i = 0; i < records.length; i++) {
+                    line = '';
+
+                    for (j = 0; j < columns.length; j++) {
+                        if (columns[j].hidden !== true) {
+                            line += '"' + records[i][columns[j].field] + '",';
+                        }
+                    }                    
+                    str += line.slice(0, line.length - 1) + '\r\n';
+                }
+            }
+
+            return str;
+        },
+
+        /**
+         * Download grid data in Comma Separated Values (CSV) format.         */        downloadCSV: function (filename, includeAllRecords) {
+            var link = document.createElement('a');
+            document.body.appendChild(link);
+            link.download = filename || 'griddata.csv';
+            link.href = 'data:text/csv;charset=utf-8,' + escape(this.getCSV(includeAllRecords));
+            link.click();
+            document.body.removeChild(link);
+            return this;
+        }
+    },
+
+    configure: function ($grid) {
+        $.extend(true, $grid, gj.grid.plugins.export.public);
+    }
+};
+
 /**  */gj.grid.plugins.columnReorder = {
     config: {
         base: {
             /** If set to true, enable column reordering with drag and drop.             */            columnReorder: false,
+
+            dragReady: false,
 
             style: {
                 targetRowIndicatorTop: 'gj-grid-row-reorder-indicator-top',
@@ -2868,45 +3089,68 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
             for (i = 0; i < $cells.length; i++) {
                 $cell = $($cells[i]);
                 $cell.on('mousedown', gj.grid.plugins.columnReorder.private.createMouseDownHandler($grid, $cell));
+                $cell.on('mousemove', gj.grid.plugins.columnReorder.private.createMouseMoveHandler($grid, $cell));
+                $cell.on('mouseup', gj.grid.plugins.columnReorder.private.createMouseUpHandler($grid, $cell));
             }
         },
 
-        createMouseDownHandler: function ($grid, $thSource) {
+        createMouseDownHandler: function ($grid) {
             return function (e) {
-                var $dragEl = $grid.clone(),
+                $grid.timeout = setTimeout(function () {
+                    $grid.data('dragReady', true);
+                }, 100);
+            }
+        },
+
+        createMouseUpHandler: function ($grid) {
+            return function (e) {
+                clearTimeout($grid.timeout);
+                $grid.data('dragReady', false);
+            }
+        },
+
+        createMouseMoveHandler: function ($grid, $thSource) {
+            return function (e) {
+                var $dragEl, srcIndex;
+                if ($grid.data('dragReady')) {
+                    $grid.data('dragReady', false);
+                    $dragEl = $grid.clone();
                     srcIndex = $thSource.index();
-                $('body').append($dragEl);
-                $dragEl.attr('data-role', 'draggable-clone').css('cursor', 'move');
-                $dragEl.find('thead tr th:eq(' + srcIndex + ')').siblings().remove();
-                $dragEl.find('tbody tr[data-role != "row"]').remove();
-                $dragEl.find('tbody tr td:nth-child(' + (srcIndex + 1) + ')').siblings().remove();
-                $dragEl.find('tfoot').remove();
-                $dragEl.draggable({
-                    stop: gj.grid.plugins.columnReorder.private.createDragStopHandler($grid, $thSource)
-                });
-                $dragEl.css({
-                    position: 'absolute', top: $thSource.offset().top, left: $thSource.offset().left, width: $thSource.width()
-                });
-                if ($thSource.attr('data-droppable') === 'true') {
-                    $thSource.droppable('destroy');
-                }
-                $thSource.siblings('th').each(function () {
-                    var $dropEl = $(this);
-                    if ($dropEl.attr('data-droppable') === 'true') {
-                        $dropEl.droppable('destroy');
-                    }
-                    $dropEl.droppable({
-                        over: gj.grid.plugins.columnReorder.private.createDroppableOverHandler($grid, $thSource),
-                        out: gj.grid.plugins.columnReorder.private.droppableOut
+                    $grid.addClass('gj-unselectable');
+                    $('body').append($dragEl);
+                    $dragEl.attr('data-role', 'draggable-clone').css('cursor', 'move');
+                    $dragEl.find('thead tr th:eq(' + srcIndex + ')').siblings().remove();
+                    $dragEl.find('tbody tr[data-role != "row"]').remove();
+                    $dragEl.find('tbody tr td:nth-child(' + (srcIndex + 1) + ')').siblings().remove();
+                    $dragEl.find('tfoot').remove();
+                    $dragEl.draggable({
+                        stop: gj.grid.plugins.columnReorder.private.createDragStopHandler($grid, $thSource)
                     });
-                });
-                $dragEl.trigger('mousedown');
+                    $dragEl.css({
+                        position: 'absolute', top: $thSource.offset().top, left: $thSource.offset().left, width: $thSource.width(), zIndex: 1
+                    });
+                    if ($thSource.attr('data-droppable') === 'true') {
+                        $thSource.droppable('destroy');
+                    }
+                    $thSource.siblings('th').each(function () {
+                        var $dropEl = $(this);
+                        if ($dropEl.attr('data-droppable') === 'true') {
+                            $dropEl.droppable('destroy');
+                        }
+                        $dropEl.droppable({
+                            over: gj.grid.plugins.columnReorder.private.createDroppableOverHandler($grid, $thSource),
+                            out: gj.grid.plugins.columnReorder.private.droppableOut
+                        });
+                    });
+                    $dragEl.trigger('mousedown');
+                }
             };
         },
 
         createDragStopHandler: function ($grid, $thSource) {
             return function (e, mousePosition) {
                 $('table[data-role="draggable-clone"]').draggable('destroy').remove();
+                $grid.removeClass('gj-unselectable');
                 $thSource.siblings('th').each(function () {
                     var $thTarget = $(this),
                         data = $grid.data(),
@@ -3066,9 +3310,9 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
             },
 
             icons: {
-                /** Expand row icon definition.                 */                expandGroup: '<i class="material-icons">add</i>',
+                /** Expand row icon definition.                 */                expandGroup: '<i class="gj-icon plus" />',
 
-                /** Collapse row icon definition.                 */                collapseGroup: '<i class="material-icons">remove</i>'
+                /** Collapse row icon definition.                 */                collapseGroup: '<i class="gj-icon minus" />'
             }
         },
 
@@ -3093,9 +3337,9 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
 
             previousValue = undefined;
             $grid.on('rowDataBound', function (e, $row, id, record) {
-                if (previousValue !== record[data.grouping.groupBy]) {
+                if (previousValue !== record[data.grouping.groupBy] || $row[0].rowIndex === 1) {
                     var colspan = gj.grid.methods.countVisibleColumns($grid) - 1,
-                        $groupRow = $('<tr data-role="group" />'),
+                        $groupRow = $('<tr role="group" />'),
                         $expandCollapseCell = $('<td class="gj-text-align-center gj-unselectable gj-cursor-pointer" />');
 
                     $expandCollapseCell.append('<div data-role="display">' + data.icons.collapseGroup + '</div>');
@@ -3120,16 +3364,29 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
         createExpandCollapseHandler: function (data) {
             return function (e) {
                 var $cell = $(this),
-                    $display = $cell.children('div[data-role="display"]'),
-                    $groupRow = $cell.closest('tr');
-                if ($groupRow.next(':visible').data('role') === 'row') {
-                    $groupRow.nextUntil('[data-role="group"]').hide();
-                    $display.empty().append(data.icons.expandGroup);
+                    methods = gj.grid.plugins.grouping.private;
+                if ($cell.closest('tr').next(':visible').data('role') === 'row') {
+                    methods.collapseGroup(data, $cell);
                 } else {
-                    $groupRow.nextUntil('[data-role="group"]').show();
-                    $display.empty().append(data.icons.collapseGroup);
+                    methods.expandGroup(data, $cell);
                 }
             };
+        },
+
+        collapseGroup: function (data, $cell) {
+            var $display = $cell.children('div[data-role="display"]'),
+                $groupRow = $cell.closest('tr');
+
+            $groupRow.nextUntil('[role="group"]').hide();
+            $display.empty().append(data.icons.expandGroup);
+        },
+
+        expandGroup: function (data, $cell) {
+            var $display = $cell.children('div[data-role="display"]'),
+                $groupRow = $cell.closest('tr');
+
+            $groupRow.nextUntil('[role="group"]').show();
+            $display.empty().append(data.icons.collapseGroup);
         }
     },
 
@@ -3141,7 +3398,6 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
         if (data.grouping && data.grouping.groupBy) {
             column = {
                 title: '',
-                field: '',
                 width: data.defaultIconColumnWidth,
                 align: 'center',
                 stopPropagation: true,
@@ -3160,105 +3416,27 @@ gj.grid.plugins.inlineEditing.configure = function ($grid, fullConfig, clientCon
     }
 };
 
-/** */gj.grid.plugins.fixedHeader = {
-    config: {
-        base: {
-
-            /** If set to true, add scroll to the table body             */            fixedHeader: false,
-
-            height: 300
-        }
-    },
-
-    private: {
-        init: function ($grid) {
-            var data = $grid.data(),
-                $tbody = $grid.children('tbody'),
-                $thead = $grid.children('thead'),
-                bodyHeight = data.height - $thead.outerHeight() - ($grid.children('tfoot').outerHeight() || 0);
-            $grid.addClass('gj-grid-scrollable');
-            $tbody.css('width', $thead.outerWidth());
-            $tbody.height(bodyHeight);
-        },
-
-        refresh: function ($grid) {
-            var i, $theadCell,
-                data = $grid.data(),
-                $tbody = $grid.children('tbody'),
-                $thead = $grid.children('thead'),
-                $tbodyCells = $grid.find('tbody tr[data-role="row"] td'),
-                $theadCells = $grid.find('thead tr[data-role="caption"] th');
-
-            if ($grid.children('tbody').height() < gj.grid.plugins.fixedHeader.private.getRowsHeight($grid)) {
-                $tbody.css('width', $thead.outerWidth() + gj.grid.plugins.fixedHeader.private.getScrollBarWidth() + (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 ? 1 : 0));
-            } else {
-                $tbody.css('width', $thead.outerWidth());
-            }
-
-            for (i = 0; i < $theadCells.length; i++) {
-                $theadCell = $($theadCells[i]);
-                $($tbodyCells[i]).attr('width', $theadCell.outerWidth());
-            }
-        },
-
-        getRowsHeight: function ($grid) {
-            var total = 0;
-            $grid.find('tbody tr').each(function () {
-                total += $(this).height();
-            });
-            return total;
-        },
-
-        getScrollBarWidth: function () {
-            var inner = document.createElement('p');
-            inner.style.width = "100%";
-            inner.style.height = "200px";
-
-            var outer = document.createElement('div');
-            outer.style.position = "absolute";
-            outer.style.top = "0px";
-            outer.style.left = "0px";
-            outer.style.visibility = "hidden";
-            outer.style.width = "200px";
-            outer.style.height = "150px";
-            outer.style.overflow = "hidden";
-            outer.appendChild(inner);
-
-            document.body.appendChild(outer);
-            var w1 = inner.offsetWidth;
-            outer.style.overflow = 'scroll';
-            var w2 = inner.offsetWidth;
-            if (w1 == w2) w2 = outer.clientWidth;
-
-            document.body.removeChild(outer);
-
-            return (w1 - w2);
-        }
-    },
-
-    public: {
-    },
-
-    events: {
-    },
-
-    configure: function ($grid, fullConfig, clientConfig) {
-        $.extend(true, $grid, gj.grid.plugins.fixedHeader.public);
-        var data = $grid.data();
-        if (clientConfig.fixedHeader) {
-            $grid.on('initialized', function () {
-                gj.grid.plugins.fixedHeader.private.init($grid);
-            });
-            $grid.on('dataBound', function () {
-                gj.grid.plugins.fixedHeader.private.refresh($grid);
-            });
-            $grid.on('resize', function () {
-                gj.grid.plugins.fixedHeader.private.refresh($grid);
-            });
-        }
-    }
+gj.grid.messages['en-us'] = {
+    First: 'First',
+    Previous: 'Previous',
+    Next: 'Next',
+    Last: 'Last',
+    Page: 'Page',
+    FirstPageTooltip: 'First Page',
+    PreviousPageTooltip: 'Previous Page',
+    NextPageTooltip: 'Next Page',
+    LastPageTooltip: 'Last Page',
+    Refresh: 'Refresh',
+    Of: 'of',
+    DisplayingRecords: 'Displaying records',
+    RowsPerPage: 'Rows per page:',
+    Edit: 'Edit',
+    Delete: 'Delete',
+    Update: 'Update',
+    Cancel: 'Cancel',
+    NoRecordsFound: 'No records found.',
+    Loading: 'Loading...'
 };
-
 gj.grid.messages['bg-bg'] = {
     First: 'Първа',
     Previous: 'Предишна',
@@ -3342,4 +3520,67 @@ gj.grid.messages['pt-br'] = {
     Cancel: 'Cancelar',
     NoRecordsFound: 'Nenhum registro encontrado.',
     Loading: 'Carregando...'
+};
+gj.grid.messages['ru-ru'] = {
+    First: 'Первый',
+    Previous: 'Предыдущий',
+    Next: 'Следующий',
+    Last: 'Последний',
+    Page: 'Страница',
+    FirstPageTooltip: 'Первая страница',
+    PreviousPageTooltip: 'Предыдущая страница',
+    NextPageTooltip: 'Следущая страница',
+    LastPageTooltip: 'Последняя страница',
+    Refresh: 'Обновить',
+    Of: 'от',
+    DisplayingRecords: 'Показать записи',
+    RowsPerPage: 'Записей на странице:',
+    Edit: 'Изменить',
+    Delete: 'Удалить',
+    Update: 'Обновить',
+    Cancel: 'Отмена',
+    NoRecordsFound: 'Нет ни одной записи.',
+    Loading: 'Загрузка...'
+};
+gj.grid.messages['es-es'] = {
+    First: 'Primero',
+    Previous: 'Anterior',
+    Next: 'Siguiente',
+    Last: 'Último',
+    Page: 'Página',
+    FirstPageTooltip: 'Primera página',
+    PreviousPageTooltip: 'Página anterior',
+    NextPageTooltip: 'Página siguiente',
+    LastPageTooltip: 'Última página',
+    Refresh: 'Refrescar',
+    Of: 'de',
+    DisplayingRecords: 'Resultados',
+    RowsPerPage: 'Lineas por página:',
+    Edit: 'Modificar',
+    Delete: 'Eliminar',
+    Update: 'Actualizar',
+    Cancel: 'Cancelar',
+    NoRecordsFound: 'No se encontraron registros.',
+    Loading: 'Cargando...'
+};
+gj.grid.messages['it-it'] = {
+    First: 'Primo',
+    Previous: 'Precedente',
+    Next: 'Successivo',
+    Last: 'Ultimo',
+    Page: 'Pagina',
+    FirstPageTooltip: 'Prima pagina',
+    PreviousPageTooltip: 'Pagina precedente',
+    NextPageTooltip: 'Pagina successiva',
+    LastPageTooltip: 'Ultima pagina',
+    Refresh: 'Aggiorna',
+    Of: 'di',
+    DisplayingRecords: 'Risultati',
+    RowsPerPage: 'Righe per pagina:',
+    Edit: 'Modifica',
+    Delete: 'Cancella',
+    Update: 'Aggiorna',
+    Cancel: 'Annulla',
+    NoRecordsFound: 'Nessun record trovato.',
+    Loading: 'Caricamento...'
 };

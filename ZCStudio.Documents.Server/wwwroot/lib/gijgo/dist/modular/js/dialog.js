@@ -1,30 +1,24 @@
 /*
- * Gijgo Dialog v1.5.0
+ * Gijgo Dialog v1.9.6
  * http://gijgo.com/dialog
  *
- * Copyright 2014, 2017 gijgo.com
+ * Copyright 2014, 2018 gijgo.com
  * Released under the MIT license
  */
-if (typeof (gj.dialog) === 'undefined') {
-    gj.dialog = {
-        plugins: {},
-        messages: []
-    };
-}
-
-gj.dialog.messages['en-us'] = {
-    Close: 'Close',
-    DefaultTitle: 'Dialog'
-};
 /* global window alert jQuery */
-/**  */gj.dialog.config = {
+/**  */gj.dialog = {
+    plugins: {},
+    messages: {}
+};
+
+gj.dialog.config = {
     base: {
         /** If set to true, the dialog will automatically open upon initialization.
          * If false, the dialog will stay hidden until the open() method is called.         */        autoOpen: true,
 
-        /** Specifies whether the dialog should close when it has focus and the user presses the escape (ESC) key.         */        closeOnEscape: true,
-
         /** Specifies whether the dialog should have a close button in right part of dialog header.         */        closeButtonInHeader: true,
+
+        /** Specifies whether the dialog should close when it has focus and the user presses the escape (ESC) key.         */        closeOnEscape: true,
 
         /** If set to true, the dialog will be draggable by the title bar.         */        draggable: true,
 
@@ -32,15 +26,13 @@ gj.dialog.messages['en-us'] = {
 
         /** The language that needs to be in use.         */        locale: 'en-us',
 
-        /** The minimum height in pixels to which the dialog can be resized.         */        minHeight: undefined,
-
         /** The maximum height in pixels to which the dialog can be resized.         */        maxHeight: undefined,
 
-        /** The width of the dialog.         */        width: 300,
+        /** The maximum width in pixels to which the dialog can be resized.         */        maxWidth: undefined,
+
+        /** The minimum height in pixels to which the dialog can be resized.         */        minHeight: undefined,
 
         /** The minimum width in pixels to which the dialog can be resized.         */        minWidth: undefined,
-
-        /** The maximum width in pixels to which the dialog can be resized.         */        maxWidth: undefined,
 
         /** If set to true, the dialog will have modal behavior.
          * Modal dialogs create an overlay below the dialog, but above other page elements and you can't interact with them.         */        modal: false,
@@ -52,6 +44,8 @@ gj.dialog.messages['en-us'] = {
         /** The title of the dialog. Can be also set through the title attribute of the html element.         */        title: undefined,
 
         /** The name of the UI library that is going to be in use. Currently we support Material Design and Bootstrap.         */        uiLibrary: undefined,
+
+        /** The width of the dialog.         */        width: 300,
 
         style: {
             modal: 'gj-modal',
@@ -168,7 +162,7 @@ gj.dialog.methods = {
         var result = gj.widget.prototype.getHTMLConfig.call(this),
             attrs = this[0].attributes;
         if (attrs['title']) {
-            result.title = attrs['title'].nodeValue;
+            result.title = attrs['title'].value;
         }
         return result;
     },
@@ -205,12 +199,13 @@ gj.dialog.methods = {
             $dialog.close();
         });
 
-        if (data.draggable && $.fn.draggable) {
-            gj.dialog.methods.draggable($dialog, $header);
-        }
-
-        if (data.resizable && $.fn.draggable) {
-            gj.dialog.methods.resizable($dialog);
+        if (gj.draggable) {
+            if (data.draggable) {
+                gj.dialog.methods.draggable($dialog, $header);
+            }
+            if (data.resizable) {
+                gj.dialog.methods.resizable($dialog);
+            }
         }
 
         if (data.scrollable && data.height) {
@@ -221,7 +216,7 @@ gj.dialog.methods = {
             });            
         }
 
-        gj.dialog.methods.setPosition($dialog);
+        gj.core.center($dialog);
 
         if (data.modal) {
             $dialog.wrapAll('<div data-role="modal" class="' + data.style.modal + '"/>');
@@ -272,14 +267,6 @@ gj.dialog.methods = {
         return $header;
     },
 
-    setPosition: function ($dialog) {
-        var left = ($(window).width() / 2) - ($dialog.width() / 2),
-            top = ($(window).height() / 2) - ($dialog.height() / 2);
-        $dialog.css('position', 'absolute');
-        $dialog.css('left', left > 0 ? left : 0);
-        $dialog.css('top', top > 0 ? top : 0);
-    },
-
     draggable: function ($dialog, $header) {
         $dialog.appendTo('body');
         $header.addClass('gj-draggable');
@@ -319,14 +306,16 @@ gj.dialog.methods = {
         $dialog.append($('<div class="gj-resizable-handle gj-resizable-se"></div>').draggable($.extend(true, {}, config)));
     },
 
-    resize: function (e, offset) {
-        var $el, $dialog, data, height, width, top, left, result = false;
+    resize: function (e, newPosition) {
+        var $el, $dialog, position, data, height, width, top, left, result = false;
 
         $el = $(this);
         $dialog = $el.parent();
+        position = gj.core.position(this);
+        offset = { top: newPosition.top - position.top, left: newPosition.left - position.left };
         data = $dialog.data();
 
-        //TODO: Include margins in the calculations
+        // TODO: Include margins in the calculations
         if ($el.hasClass('gj-resizable-n')) {
             height = $dialog.height() - offset.top;
             top = $dialog.offset().top + offset.top;
@@ -408,6 +397,15 @@ gj.dialog.methods = {
         return $dialog.is(':visible');
     },
 
+    content: function ($dialog, html) {
+        var $body = $dialog.children('div[data-role="body"]');
+        if (typeof (html) === "undefined") {
+            return $body.html();
+        } else {
+            return $body.html(html);
+        }
+    },
+
     destroy: function ($dialog, keepHtml) {
         var data = $dialog.data();
         if (data) {
@@ -450,6 +448,11 @@ gj.dialog.methods = {
     }
 
     /**
+     * Gets or set the content of a dialog. Supports chaining when used as a setter.     */    self.content = function (content) {
+        return methods.content(this, content);
+    }
+
+    /**
      * Destroy the dialog.     */    self.destroy = function (keepHtml) {
         return methods.destroy(this, keepHtml);
     }
@@ -469,7 +472,7 @@ gj.dialog.widget.prototype.getHTMLConfig = gj.dialog.methods.getHTMLConfig;
 
 (function ($) {
     $.fn.dialog = function (method) {
-        var $widget;        
+        var $widget;
         if (this && this.length) {
             if (typeof method === 'object' || !method) {
                 return new gj.dialog.widget(this, method);
@@ -484,6 +487,10 @@ gj.dialog.widget.prototype.getHTMLConfig = gj.dialog.methods.getHTMLConfig;
         }
     };
 })(jQuery);
+gj.dialog.messages['en-us'] = {
+    Close: 'Close',
+    DefaultTitle: 'Dialog'
+};
 gj.dialog.messages['bg-bg'] = {
     Close: 'Затваряне',
     DefaultTitle: 'Диалогов Прозорец'
@@ -499,4 +506,16 @@ gj.dialog.messages['de-de'] = {
 gj.dialog.messages['pt-br'] = {
     Close: 'Fechar',
     DefaultTitle: 'Caixa de diálogo'
+};
+gj.dialog.messages['ru-ru'] = {
+    Close: 'Закрыть',
+    DefaultTitle: 'Сообщение'
+};
+gj.dialog.messages['es-es'] = {
+    Close: 'Cerrar',
+    DefaultTitle: 'Titulo por defecto'
+};
+gj.dialog.messages['it-it'] = {
+    Close: 'Chiudi',
+    DefaultTitle: 'Dialogo'
 };

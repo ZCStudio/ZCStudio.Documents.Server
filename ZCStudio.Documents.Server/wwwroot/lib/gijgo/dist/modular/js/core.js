@@ -1,13 +1,11 @@
 /*
- * Gijgo JavaScript Library v1.5.0
+ * Gijgo JavaScript Library v1.9.6
  * http://gijgo.com/
  *
- * Copyright 2014, 2017 gijgo.com
+ * Copyright 2014, 2018 gijgo.com
  * Released under the MIT license
  */
-if (typeof (gj) === 'undefined') {
-    gj = {};
-}
+var gj = {};
 
 gj.widget = function () {
     var self = this;
@@ -128,13 +126,16 @@ gj.widget.prototype.getHTMLConfig = function () {
     var result = this.data(),
         attrs = this[0].attributes;
     if (attrs['width']) {
-        result.width = attrs['width'].nodeValue;
+        result.width = attrs['width'].value;
     }
     if (attrs['height']) {
-        result.height = attrs['height'].nodeValue;
+        result.height = attrs['height'].value;
+    }
+    if (attrs['value']) {
+        result.value = attrs['value'].value;
     }
     if (attrs['align']) {
-        result.align = attrs['align'].nodeValue;
+        result.align = attrs['align'].value;
     }
     if (result && result.source) {
         result.dataSource = result.source;
@@ -245,8 +246,22 @@ gj.documentManager = {
 };
 
 /**  */gj.core = {
-    /**      */    parseDate: function (value, format) {
-        var i, date, month, year, dateParts, formatParts, result;
+    messages: {
+        'en-us': {
+            monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            monthShortNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],            
+            weekDaysMin: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+            weekDaysShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+            weekDays: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+            am: 'AM',
+            pm: 'PM',
+            ok: 'Ok',
+            cancel: 'Cancel'
+        }
+    },
+
+    /**      */    parseDate: function (value, format, locale) {
+        var i, year = 0, month = 0, date = 0, hour = 0, minute = 0, dateParts, formatParts, result;
 
         if (value && typeof value === 'string') {
             if (/^\d+$/.test(value)) {
@@ -260,15 +275,23 @@ gj.documentManager = {
                     if (['d', 'dd'].indexOf(formatParts[i]) > -1) {
                         date = parseInt(dateParts[i], 10);
                     } else if (['m', 'mm'].indexOf(formatParts[i]) > -1) {
-                        month = parseInt(dateParts[i], 10);
+                        month = parseInt(dateParts[i], 10) - 1;
+                    } else if ('mmm' === formatParts[i]) {
+                        month = gj.core.messages[locale || 'en-us'].monthShortNames.indexOf(dateParts[i]);
+                    } else if ('mmmm' === formatParts[i]) {
+                        month = gj.core.messages[locale || 'en-us'].monthNames.indexOf(dateParts[i]);
                     } else if (['yy', 'yyyy'].indexOf(formatParts[i]) > -1) {
                         year = parseInt(dateParts[i], 10);
                         if (formatParts[i] === 'yy') {
                             year += 2000;
                         }
+                    } else if (['h', 'hh', 'H', 'HH'].indexOf(formatParts[i]) > -1) {
+                        hour = parseInt(dateParts[i], 10);
+                    } else if (['M', 'MM'].indexOf(formatParts[i]) > -1) {
+                        minute = parseInt(dateParts[i], 10);
                     }
                 }
-                result = new Date(year, month - 1, date);
+                result = new Date(year, month, date, hour, minute);
             }
         } else if (typeof value === 'number') {
             result = new Date(value);
@@ -279,18 +302,12 @@ gj.documentManager = {
         return result;
     },
 
-    /**      */    formatDate: function (date, format) {
+    /**      */    formatDate: function (date, format, locale) {
         var result = '', separator, tmp,
             formatParts = format.split(/[\s,-\.//\:]+/),
-            separators = format.replace(/[shtdmyHTDMY]/g, ''),
-            pad = function (val, len) {
-                val = String(val);
-                len = len || 2;
-                while (val.length < len) {
-                    val = '0' + val;
-                }
-                return val;
-            };
+            separators = format.split(/s+|M+|H+|h+|t+|T+|d+|m+|y+/);
+
+        separators = separators.splice(1, separators.length - 2);
 
         for (i = 0; i < formatParts.length; i++) {
             separator = (separators[i] || '');
@@ -299,19 +316,19 @@ gj.documentManager = {
                     result += date.getSeconds() + separator;
                     break;
                 case 'ss':
-                    result += pad(date.getSeconds()) + separator;
+                    result += gj.core.pad(date.getSeconds()) + separator;
                     break;
                 case 'M':
                     result += date.getMinutes() + separator;
                     break;
                 case 'MM':
-                    result += pad(date.getMinutes()) + separator;
+                    result += gj.core.pad(date.getMinutes()) + separator;
                     break;
                 case 'H':
                     result += date.getHours() + separator;
                     break;
                 case 'HH':
-                    result += pad(date.getHours()) + separator;
+                    result += gj.core.pad(date.getHours()) + separator;
                     break;
                 case 'h':
                     tmp = date.getHours() > 12 ? date.getHours() % 12 : date.getHours();
@@ -319,7 +336,7 @@ gj.documentManager = {
                     break;
                 case 'hh':
                     tmp = date.getHours() > 12 ? date.getHours() % 12 : date.getHours();
-                    result += pad(tmp) + separator;
+                    result += gj.core.pad(tmp) + separator;
                     break;
                 case 'tt':
                     result += (date.getHours() >= 12 ? 'pm' : 'am') + separator;
@@ -330,14 +347,26 @@ gj.documentManager = {
                 case 'd':
                     result += date.getDate() + separator;
                     break;
-                case 'dd' :
-                    result += pad(date.getDate()) + separator;
+                case 'dd':
+                    result += gj.core.pad(date.getDate()) + separator;
+                    break;
+                case 'ddd':
+                    result += gj.core.messages[locale || 'en-us'].weekDaysShort[date.getDay()] + separator;
+                    break;
+                case 'dddd':
+                    result += gj.core.messages[locale || 'en-us'].weekDays[date.getDay()] + separator;
                     break;
                 case 'm' :
                     result += (date.getMonth() + 1) + separator;
                     break;
-                case 'mm' :
-                    result += pad(date.getMonth() + 1) + separator;
+                case 'mm':
+                    result += gj.core.pad(date.getMonth() + 1) + separator;
+                    break;
+                case 'mmm':
+                    result += gj.core.messages[locale || 'en-us'].monthShortNames[date.getMonth()] + separator;
+                    break;
+                case 'mmmm':
+                    result += gj.core.messages[locale || 'en-us'].monthNames[date.getMonth()] + separator;
                     break;
                 case 'yy' :
                     result += date.getFullYear().toString().substr(2) + separator;
@@ -349,5 +378,195 @@ gj.documentManager = {
         }
 
         return result;
+    },
+
+    pad: function (val, len) {
+        val = String(val);
+        len = len || 2;
+        while (val.length < len) {
+            val = '0' + val;
+        }
+        return val;
+    },
+
+    center: function ($dialog) {
+        var left = ($(window).width() / 2) - ($dialog.width() / 2),
+            top = ($(window).height() / 2) - ($dialog.height() / 2);
+        $dialog.css('position', 'absolute');
+        $dialog.css('left', left > 0 ? left : 0);
+        $dialog.css('top', top > 0 ? top : 0);
+    },
+
+    isIE: function () {
+        return !!navigator.userAgent.match(/Trident/g) || !!navigator.userAgent.match(/MSIE/g);
+    },
+
+    setChildPosition: function (mainEl, childEl) {
+        var mainElRect = mainEl.getBoundingClientRect(),
+            mainElHeight = gj.core.height(mainEl, true),
+            childElHeight = gj.core.height(childEl, true),
+            mainElWidth = gj.core.width(mainEl, true),
+            childElWidth = gj.core.width(childEl, true),
+            scrollY = window.scrollY || window.pageYOffset || 0,
+            scrollX = window.scrollX || window.pageXOffset || 0;
+
+        if ((mainElRect.top + mainElHeight + childElHeight) > window.innerHeight && mainElRect.top > childElHeight) {
+            childEl.style.top = Math.round(mainElRect.top + scrollY - childElHeight - 3) + 'px';
+        } else {
+            childEl.style.top = Math.round(mainElRect.top + scrollY + mainElHeight + 3) + 'px';
+        }
+
+        if (mainElRect.left + childElWidth > document.body.clientWidth) {
+            childEl.style.left = Math.round(mainElRect.left + scrollX + mainElWidth - childElWidth) + 'px';
+        } else {
+            childEl.style.left = Math.round(mainElRect.left + scrollX) + 'px';
+        }
+    },
+
+    height: function (el, margin) {
+        var result, style = window.getComputedStyle(el);
+
+        if (style.boxSizing === 'border-box') { // border-box include padding and border within the height
+            result = parseInt(style.height, 10);
+        } else {
+            result = parseInt(style.height, 10);
+            result += parseInt(style.paddingTop || 0, 10) + parseInt(style.paddingBottom || 0, 10);
+            result += parseInt(style.borderTop || 0, 10) + parseInt(style.borderBottom || 0, 10);
+        }
+
+        if (margin) {
+            result += parseInt(style.marginTop || 0, 10) + parseInt(style.marginBottom || 0, 10);
+        }
+
+        return result;
+    },
+
+    width: function (el, margin) {
+        var result, style = window.getComputedStyle(el);
+
+        if (style.boxSizing === 'border-box') { // border-box include padding and border within the width
+            result = parseInt(style.width, 10);
+        } else {
+            result = parseInt(style.width, 10);
+            result += parseInt(style.paddingLeft || 0, 10) + parseInt(style.paddingRight || 0, 10);
+            result += parseInt(style.borderLeft || 0, 10) + parseInt(style.borderRight || 0, 10);
+        }
+
+        if (margin) {
+            result += parseInt(style.marginLeft || 0, 10) + parseInt(style.marginRight || 0, 10);
+        }
+
+        return result;
+    },
+
+    addClasses: function (el, classes) {
+        var i, arr;
+        if (classes) {
+            arr = classes.split(' ');
+            for (i = 0; i < arr.length; i++) {
+                el.classList.add(arr[i]);
+            }
+        }
+    },
+
+    position: function (elem, padding, margin) {
+        var box = elem.getBoundingClientRect(),
+            body = document.body,
+            bodyStyle = window.getComputedStyle(body),
+            docEl = document.documentElement,
+            scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop,
+            scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft,
+            clientTop = docEl.clientTop || body.clientTop || 0,
+            clientLeft = docEl.clientLeft || body.clientLeft || 0,
+            top = Math.round(box.top + scrollTop - clientTop),
+            left = Math.round(box.left + scrollLeft - clientLeft);
+
+        if (padding) {
+            top += parseInt(bodyStyle.paddingTop || 0, 10);
+            left += parseInt(bodyStyle.paddingLeft || 0, 10);
+        }
+        if (margin) {
+            top += parseInt(bodyStyle.marginTop || 0, 10);
+            left += parseInt(bodyStyle.marginLeft || 0, 10);
+        }
+
+        return { top: top, left: left, bottom: top + gj.core.height(elem), right: left + gj.core.width(elem) };
     }
+};
+gj.core.messages['bg-bg'] = {
+    monthNames: ['Януари', 'Февруари', 'Март', 'Април', 'Май', 'Юни', 'Юли', 'Август', 'Септември', 'Октомври', 'Ноември', 'Декември'],
+    monthShortNames: ['Яну', 'Фев', 'Мар', 'Апр', 'Май', 'Юни', 'Юли', 'Авг', 'Сеп', 'ОКт', 'Ное', 'Дек'],
+    weekDaysMin: ['Н', 'П', 'В', 'С', 'Ч', 'П', 'С'],
+    weekDaysShort: ['Нед', 'Пон', 'Вто', 'Сря', 'Чет', 'Пет', 'Съб'],
+    weekDays: ['Неделя', 'Понеделник', 'Вторник', 'Сряда', 'Четвъртък', 'Петък', 'Събота'],
+    am: 'AM',
+    pm: 'PM',
+    ok: 'ОК',
+    cancel: 'Отказ'
+};
+gj.core.messages['fr-fr'] = {
+    monthNames: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
+    monthShortNames: ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'],
+    weekDaysMin: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+    weekDaysShort: ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'],
+    weekDays: ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'],
+    am: 'AM',
+    pm: 'PM',
+    ok: 'OK',
+    cancel: 'Annuler'
+};
+gj.core.messages['de-de'] = {
+    monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+    monthShortNames: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+    weekDaysMin: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+    weekDaysShort: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+    weekDays: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+    am: 'AM',
+    pm: 'PM',
+    ok: 'OK',
+    cancel: 'Abbrechen'
+};
+gj.core.messages['pt-br'] = {
+    monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+    monthShortNames: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+    weekDaysMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
+    weekDaysShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
+    weekDays: ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'],
+    am: 'AM',
+    pm: 'PM',
+    ok: 'OK',
+    cancel: 'Cancelar'
+};
+gj.core.messages['ru-ru'] = {
+    monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+    monthShortNames: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+    weekDaysMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+    weekDaysShort: ['вск', 'пнд', 'втр', 'срд', 'чтв', 'птн', 'сбт'],
+    weekDays: ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'],
+    am: 'AM',
+    pm: 'PM',
+    ok: 'ОК',
+    cancel: 'Отмена'
+};
+gj.core.messages['es-es'] = {
+    monthNames: ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'setiembre', 'octubre', 'noviembre', 'diciembre'],
+    monthShortNames: ['ene.', 'feb.', 'mar', 'abr.', 'may', 'jun', 'jul.', 'ago', 'set.', 'oct.', 'nov.', 'dic.'],
+    weekDaysMin: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+    weekDaysShort: ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'],
+    weekDays: ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
+    am: 'AM',
+    pm: 'PM',
+    ok: 'OK',
+    cancel: 'Cancelar'
+};
+gj.core.messages['it-it'] = {
+    monthNames: ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'],
+    monthShortNames: ['gen.', 'feb.', 'mar.', 'apr.', 'mag.', 'giu.', 'lug.', 'ago.', 'set.', 'ott.', 'nov.', 'dic.'],
+    weekDaysMin: ['Do', 'Lu', 'Ma', 'Me', 'Gi', 'Ve', 'Sa'],
+    weekDaysShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven','Sab'],
+    weekDays: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],
+    am: 'AM',
+    pm: 'PM',
+    ok: 'OK',
+    cancel: 'Annulla'
 };

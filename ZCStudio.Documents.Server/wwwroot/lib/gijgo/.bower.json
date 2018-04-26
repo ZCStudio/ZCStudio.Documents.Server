@@ -1,6 +1,6 @@
 {
   "name": "gijgo",
-  "version": "1.5.0",
+  "version": "1.9.6",
   "description": "Gijgo is a set of free open source javascript controls distributed under MIT License with built-in support for Bootstrap and Material Design",
   "main": [
     "./dist/combined/js/gijgo.js",
@@ -43,14 +43,14 @@
     "bower_components",
     "**/.*"
   ],
-  "_release": "1.5.0",
+  "_release": "1.9.6",
   "_resolution": {
     "type": "version",
-    "tag": "v1.5.0",
-    "commit": "4f9e7c5e97c4298a71c3fbeb19ed83e17adeb67d"
+    "tag": "v1.9.6",
+    "commit": "aa9a86e52bddf1e664ca29a9f4c0355f143f3d43"
   },
   "_source": "https://github.com/atatanasov/gijgo.git",
-  "_target": "v1.5.0",
+  "_target": "v1.9.6",
   "_originalSource": "gijgo",
   "_direct": true
 }

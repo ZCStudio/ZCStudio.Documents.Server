@@ -2,20 +2,25 @@
   "name": "asp.net",
   "private": true,
   "dependencies": {
-    "bootstrap": "v4.0.0-beta",
-    "jquery": "3.2.1",
+    "bootstrap": "v4.1.0",
+    "jquery": "3.3.1",
     "jquery-validation": "1.17.0",
-    "jquery-validation-unobtrusive": "3.2.6",
-    "popper.js": "v1.11.1",
+    "jquery-validation-unobtrusive": "v3.2.9",
+    "popper.js": "v1.14.3",
     "pepper": "v1.3.1",
-    "gijgo": "v1.5.0",
-    "marked": "v0.3.6",
+    "gijgo": "v1.9.6",
+    "marked": "v0.3.19",
     "highlight": "9.12.0",
-    "jquery-query-object": "2.2.3"
+    "jquery-query-object": "2.2.3",
+    "tether": "v1.4.4"
   },
   "resolutions": {
     "jquery-validation": "1.17.0",
-    "jquery": ">= 1.7.2",
-    "bootstrap": "v4.0.0-beta"
+    "jquery": "3.3.1",
+    "bootstrap": "v4.1.0",
+    "gijgo": "v1.9.6",
+    "jquery-validation-unobtrusive": "v3.2.9",
+    "marked": "v0.3.19",
+    "popper.js": "v1.14.3"
   }
 }

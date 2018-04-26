@@ -1,35 +1,17 @@
 /*
- * Gijgo Editor v1.5.0
+ * Gijgo Editor v1.9.6
  * http://gijgo.com/editor
  *
- * Copyright 2014, 2017 gijgo.com
+ * Copyright 2014, 2018 gijgo.com
  * Released under the MIT license
  */
-if (typeof (gj.editor) === 'undefined') {
-    gj.editor = {
-        plugins: {},
-        messages: []
-    };
-}
-
-gj.editor.messages['en-us'] = {
-    bold: 'Bold',
-    italic: 'Italic',
-    strikethrough: 'Strikethrough',
-    underline: 'Underline',
-    listBulleted: 'List Bulleted',
-    listNumbered: 'List Numbered',
-    indentDecrease: 'Indent Decrease',
-    indentIncrease: 'Indent Increase',
-    alignLeft: 'Align Left',
-    alignCenter: 'Align Center',
-    alignRight: 'Align Right',
-    alignJustify: 'Align Justify',
-    undo: 'Undo',
-    redo: 'Redo'
-};
 /* global window alert jQuery */
-/**  */gj.editor.config = {
+/**  */gj.editor = {
+    plugins: {},
+    messages: {}
+};
+
+gj.editor.config = {
     base: {
 
         /** The height of the editor. Numeric values are treated as pixels.         */        height: 300,
@@ -45,7 +27,7 @@ gj.editor.messages['en-us'] = {
         buttons: undefined,
 
         style: {
-            wrapper: 'gj-editor-md',
+            wrapper: 'gj-editor gj-editor-md',
             buttonsGroup: 'gj-button-md-group',
             button: 'gj-button-md',
             buttonActive: 'active'
@@ -54,43 +36,41 @@ gj.editor.messages['en-us'] = {
 
     bootstrap: {
         style: {
-            wrapper: 'gj-editor-bootstrap',
+            wrapper: 'gj-editor gj-editor-bootstrap',
             buttonsGroup: 'btn-group',
             button: 'btn btn-default gj-cursor-pointer',
             buttonActive: 'active'
-        },
-        iconsLibrary: 'fontawesome'
+        }
     },
 
     bootstrap4: {
         style: {
-            wrapper: 'gj-editor-bootstrap',
+            wrapper: 'gj-editor gj-editor-bootstrap',
             buttonsGroup: 'btn-group',
-            button: 'btn btn-secondary gj-cursor-pointer',
+            button: 'btn btn-outline-secondary gj-cursor-pointer',
             buttonActive: 'active'
-        },
-        iconsLibrary: 'fontawesome'
+        }
     },
 
     materialicons: {
         icons: {
-            bold: '<i class="material-icons">format_bold</i>',
-            italic: '<i class="material-icons">format_italic</i>',
-            strikethrough: '<i class="material-icons">strikethrough_s</i>',
-            underline: '<i class="material-icons">format_underlined</i>',
+            bold: '<i class="gj-icon bold" />',
+            italic: '<i class="gj-icon italic" />',
+            strikethrough: '<i class="gj-icon strikethrough" />',
+            underline: '<i class="gj-icon underlined" />',
 
-            listBulleted: '<i class="material-icons">format_list_bulleted</i>',
-            listNumbered: '<i class="material-icons">format_list_numbered</i>',
-            indentDecrease: '<i class="material-icons">format_indent_decrease</i>',
-            indentIncrease: '<i class="material-icons">format_indent_increase</i>',
+            listBulleted: '<i class="gj-icon list-bulleted" />',
+            listNumbered: '<i class="gj-icon list-numbered" />',
+            indentDecrease: '<i class="gj-icon indent-decrease" />',
+            indentIncrease: '<i class="gj-icon indent-increase" />',
 
-            alignLeft: '<i class="material-icons">format_align_left</i>',
-            alignCenter: '<i class="material-icons">format_align_center</i>',
-            alignRight: '<i class="material-icons">format_align_right</i>',
-            alignJustify: '<i class="material-icons">format_align_justify</i>',
+            alignLeft: '<i class="gj-icon align-left" />',
+            alignCenter: '<i class="gj-icon align-center" />',
+            alignRight: '<i class="gj-icon align-right" />',
+            alignJustify: '<i class="gj-icon align-justify" />',
 
-            undo: '<i class="material-icons">undo</i>',
-            redo: '<i class="material-icons">redo</i>'
+            undo: '<i class="gj-icon undo" />',
+            redo: '<i class="gj-icon redo" />'
         }
     },
 
@@ -126,30 +106,48 @@ gj.editor.methods = {
     },
 
     initialize: function ($editor) {
-        var self = this, data = $editor.data(), $group, $btn,
-            $body = $editor.children('div[data-role="body"]'),
-            $toolbar = $editor.children('div[data-role="toolbar"]');
+        var self = this, data = $editor.data(),
+            $group, $btn, wrapper, $body, $toolbar;
+
+        $editor.hide();
+
+        if ($editor[0].parentElement.attributes.role !== 'wrapper') {
+            wrapper = document.createElement('div');
+            wrapper.setAttribute('role', 'wrapper');
+            $editor[0].parentNode.insertBefore(wrapper, $editor[0]);
+            wrapper.appendChild($editor[0]);
+        }
 
         gj.editor.methods.localization(data);
-
-        $editor.addClass(data.style.wrapper);
+        $(wrapper).addClass(data.style.wrapper);
         if (data.width) {
-            $editor.width(data.width);
+            $(wrapper).width(data.width);
         }
 
+        $body = $(wrapper).children('div[role="body"]');
         if ($body.length === 0) {
-            $editor.wrapInner('<div data-role="body"></div>');
-            $body = $editor.children('div[data-role="body"]');
+            $body = $('<div role="body"></div>');
+            $(wrapper).append($body);
+            if ($editor[0].innerText) {
+                $body[0].innerHTML = $editor[0].innerText;
+            }
         }
-
         $body.attr('contenteditable', true);
-
-        $body.on('mouseup keyup mouseout', function () {
+        $body.on('keydown', function (e) {
+            var key = event.keyCode || event.charCode;
+            if (gj.editor.events.changing($editor) === false && key !== 8 && key !== 46) {
+                e.preventDefault();
+            }
+        });
+        $body.on('mouseup keyup mouseout cut paste', function (e) {
             self.updateToolbar($editor, $toolbar);
+            gj.editor.events.changed($editor);
+            $editor.html($body.html());
         });
 
+        $toolbar = $(wrapper).children('div[role="toolbar"]');
         if ($toolbar.length === 0) {
-            $toolbar = $('<div data-role="toolbar"></div>');
+            $toolbar = $('<div role="toolbar"></div>');
             $body.before($toolbar);
 
             for (var group in data.buttons) {
@@ -165,7 +163,7 @@ gj.editor.methods = {
             }
         }
 
-        $body.height(data.height - $toolbar.outerHeight());
+        $body.height(data.height - gj.core.height($toolbar[0], true));
     },
 
     localization: function (data) {
@@ -173,26 +171,26 @@ gj.editor.methods = {
         if (typeof (data.buttons) === 'undefined') {
             data.buttons = [
                 [
-                    '<button type="button" class="' + data.style.button + '" title="' + msg.bold + '" data-role="bold">' + data.icons.bold + '</button>',
-                    '<button type="button" class="' + data.style.button + '" title="' + msg.italic + '" data-role="italic">' + data.icons.italic + '</button>',
-                    '<button type="button" class="' + data.style.button + '" title="' + msg.strikethrough + '" data-role="strikethrough">' + data.icons.strikethrough + '</button>',
-                    '<button type="button" class="' + data.style.button + '" title="' + msg.underline + '" data-role="underline">' + data.icons.underline + '</button>'
+                    '<button type="button" class="' + data.style.button + '" title="' + msg.bold + '" role="bold">' + data.icons.bold + '</button>',
+                    '<button type="button" class="' + data.style.button + '" title="' + msg.italic + '" role="italic">' + data.icons.italic + '</button>',
+                    '<button type="button" class="' + data.style.button + '" title="' + msg.strikethrough + '" role="strikethrough">' + data.icons.strikethrough + '</button>',
+                    '<button type="button" class="' + data.style.button + '" title="' + msg.underline + '" role="underline">' + data.icons.underline + '</button>'
                 ],
                 [
-                    '<button type="button" class="' + data.style.button + '" title="' + msg.listBulleted + '" data-role="insertunorderedlist">' + data.icons.listBulleted + '</button>',
-                    '<button type="button" class="' + data.style.button + '" title="' + msg.listNumbered + '" data-role="insertorderedlist">' + data.icons.listNumbered + '</button>',
-                    '<button type="button" class="' + data.style.button + '" title="' + msg.indentDecrease + '" data-role="outdent">' + data.icons.indentDecrease + '</button>',
-                    '<button type="button" class="' + data.style.button + '" title="' + msg.indentIncrease + '" data-role="indent">' + data.icons.indentIncrease + '</button>'
+                    '<button type="button" class="' + data.style.button + '" title="' + msg.listBulleted + '" role="insertunorderedlist">' + data.icons.listBulleted + '</button>',
+                    '<button type="button" class="' + data.style.button + '" title="' + msg.listNumbered + '" role="insertorderedlist">' + data.icons.listNumbered + '</button>',
+                    '<button type="button" class="' + data.style.button + '" title="' + msg.indentDecrease + '" role="outdent">' + data.icons.indentDecrease + '</button>',
+                    '<button type="button" class="' + data.style.button + '" title="' + msg.indentIncrease + '" role="indent">' + data.icons.indentIncrease + '</button>'
                 ],
                 [
-                    '<button type="button" class="' + data.style.button + '" title="' + msg.alignLeft + '" data-role="justifyleft">' + data.icons.alignLeft + '</button>',
-                    '<button type="button" class="' + data.style.button + '" title="' + msg.alignCenter + '" data-role="justifycenter">' + data.icons.alignCenter + '</button>',
-                    '<button type="button" class="' + data.style.button + '" title="' + msg.alignRight + '" data-role="justifyright">' + data.icons.alignRight + '</button>',
-                    '<button type="button" class="' + data.style.button + '" title="' + msg.alignJustify + '" data-role="justifyfull">' + data.icons.alignJustify + '</button>'
+                    '<button type="button" class="' + data.style.button + '" title="' + msg.alignLeft + '" role="justifyleft">' + data.icons.alignLeft + '</button>',
+                    '<button type="button" class="' + data.style.button + '" title="' + msg.alignCenter + '" role="justifycenter">' + data.icons.alignCenter + '</button>',
+                    '<button type="button" class="' + data.style.button + '" title="' + msg.alignRight + '" role="justifyright">' + data.icons.alignRight + '</button>',
+                    '<button type="button" class="' + data.style.button + '" title="' + msg.alignJustify + '" role="justifyfull">' + data.icons.alignJustify + '</button>'
                 ],
                 [
-                    '<button type="button" class="' + data.style.button + '" title="' + msg.undo + '" data-role="undo">' + data.icons.undo + '</button>',
-                    '<button type="button" class="' + data.style.button + '" title="' + msg.redo + '" data-role="redo">' + data.icons.redo + '</button>'
+                    '<button type="button" class="' + data.style.button + '" title="' + msg.undo + '" role="undo">' + data.icons.undo + '</button>',
+                    '<button type="button" class="' + data.style.button + '" title="' + msg.redo + '" role="redo">' + data.icons.redo + '</button>'
                 ]
             ];
         }
@@ -200,9 +198,9 @@ gj.editor.methods = {
 
     updateToolbar: function ($editor, $toolbar) {
         var data = $editor.data();
-        $buttons = $toolbar.find('[data-role]').each(function() {
+        $buttons = $toolbar.find('[role]').each(function() {
             var $btn = $(this),
-                cmd = $btn.attr('data-role');
+                cmd = $btn.attr('role');
 
             if (cmd && document.queryCommandEnabled(cmd) && document.queryCommandValue(cmd) === "true") {
                 $btn.addClass(data.style.buttonActive);
@@ -210,17 +208,16 @@ gj.editor.methods = {
                 $btn.removeClass(data.style.buttonActive);
             }
         });
-        gj.editor.events.change($editor);
     },
 
     executeCmd: function ($editor, $body, $toolbar, $btn) {
         $body.focus();
-        document.execCommand($btn.attr('data-role'), false);
+        document.execCommand($btn.attr('role'), false);
         gj.editor.methods.updateToolbar($editor, $toolbar);
     },
 
     content: function ($editor, html) {
-        var $body = $editor.children('div[data-role="body"]');
+        var $body = $editor.parent().children('div[role="body"]');
         if (typeof (html) === "undefined") {
             return $body.html();
         } else {
@@ -229,23 +226,34 @@ gj.editor.methods = {
     },
 
     destroy: function ($editor) {
+        var $wrapper;
         if ($editor.attr('data-editor') === 'true') {
-            $editor.removeClass($editor.data().style.wrapper);
+            $wrapper = $editor.parent();
+            $wrapper.children('div[role="body"]').remove();
+            $wrapper.children('div[role="toolbar"]').remove();
+            $editor.unwrap();
             $editor.removeData();
             $editor.removeAttr('data-guid');
             $editor.removeAttr('data-editor');
             $editor.off();
-            $editor.empty();
+            $editor.show();
         }
         return $editor;
     }
 };
 
 gj.editor.events = {
+
     /**
-     * Triggered when the editor text is changed.
-     *     */    change: function ($editor) {
-        return $editor.triggerHandler('change');
+     * Event fires before change of text in the editor.
+     *     */    changing: function ($editor) {
+        return $editor.triggerHandler('changing');
+    },
+
+    /**
+     * Event fires after change of text in the editor.
+     *     */    changed: function ($editor) {
+        return $editor.triggerHandler('changed');
     }
 };
 
@@ -289,9 +297,25 @@ gj.editor.widget.constructor = gj.editor.widget;
         }
     };
 })(jQuery);
+gj.editor.messages['en-us'] = {
+    bold: 'Bold',
+    italic: 'Italic',
+    strikethrough: 'Strikethrough',
+    underline: 'Underline',
+    listBulleted: 'List Bulleted',
+    listNumbered: 'List Numbered',
+    indentDecrease: 'Indent Decrease',
+    indentIncrease: 'Indent Increase',
+    alignLeft: 'Align Left',
+    alignCenter: 'Align Center',
+    alignRight: 'Align Right',
+    alignJustify: 'Align Justify',
+    undo: 'Undo',
+    redo: 'Redo'
+};
 gj.editor.messages['bg-bg'] = {
 	bold: 'Удебеляване',
-	italic: 'Накланяде',
+	italic: 'Накланяне',
 	strikethrough: 'Зачертаване',
 	underline: 'Подчертаване',
 	listBulleted: 'Списък',
@@ -352,4 +376,52 @@ gj.editor.messages['pt-br'] = {
     alignJustify: 'Justificar',
     undo: 'Desfazer',
     redo: 'Refazer'
+};
+gj.editor.messages['ru-ru'] = {
+	bold: 'Жирный',
+	italic: 'Курсив',
+	strikethrough: 'Зачеркнутый',
+	underline: 'Подчеркнутый',
+	listBulleted: 'Список',
+	listNumbered: 'Нумерованный список',
+	indentDecrease: 'Уменьшить отступ',
+	indentIncrease: 'Увеличить отступ',
+	alignLeft: 'Выровнять по левому краю',
+	alignCenter: 'Выровнять по центру',
+	alignRight: 'Выровнять по правому краю',
+	alignJustify: 'Выровнять по ширине',
+	undo: 'Назад',
+	redo: 'Вперед'
+};
+gj.editor.messages['es-es'] = {
+    bold: 'Negrita',
+    italic: 'Italica',
+    strikethrough: 'Tachado',
+    underline: 'Subrayado',
+    listBulleted: 'Puntos',
+    listNumbered: 'Lista numerada',
+    indentDecrease: 'Disminuir indentacion',
+    indentIncrease: 'Aumentar indentacion',
+    alignLeft: 'Alineación izquierda',
+    alignCenter: 'Alineación centrada',
+    alignRight: 'Alineación derecha',
+    alignJustify: 'Alineación justificada',
+    undo: 'Deshacer',
+    redo: 'Repetir'
+};
+gj.editor.messages['it-it'] = {
+    bold: 'Grassetto',
+    italic: 'Corsivo',
+    strikethrough: 'Barrato',
+    underline: 'Sottolineato',
+    listBulleted: 'Lista puntata',
+    listNumbered: 'Lista numerata',
+    indentDecrease: 'sposta testo a sinistra',
+    indentIncrease: 'sposta testo a destra',
+    alignLeft: 'Allineamento a sinistra',
+    alignCenter: 'Centrato',
+    alignRight: 'Allineamento a destra',
+    alignJustify: 'Giustificato',
+    undo: 'Annulla',
+    redo: 'Ripeti'
 };
