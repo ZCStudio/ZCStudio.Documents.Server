@@ -13,6 +13,6 @@ table tr {
     background-color: #fff;
 }
 
-table tr:nth-child(2n) {
-    background-color: #f8f8f8;
-}
+    table tr:nth-child(2n) {
+        background-color: #f8f8f8;
+    }
