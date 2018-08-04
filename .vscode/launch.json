@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/ZCStudio.Documents.Server/bin/Debug/netcoreapp2.0/ZCStudio.Documents.Server.dll",
+            "program": "${workspaceFolder}/ZCStudio.Documents.Server/bin/Debug/netcoreapp2.1/ZCStudio.Documents.Server.dll",
             "args": [],
             "cwd": "${workspaceFolder}/ZCStudio.Documents.Server",
             "stopAtEntry": false,
